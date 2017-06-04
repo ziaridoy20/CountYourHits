@@ -24,6 +24,8 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class ColorBlobDetectionActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
+
+    //A Tag to filter the log messages
     private static final String  TAG = "OCVSample::Activity";
 
     private boolean              mIsColorSelected = false;
@@ -35,12 +37,18 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     private Size                 SPECTRUM_SIZE;
     private Scalar               CONTOUR_COLOR;
 
+
+    //A class used to implement the interaction between OpenCV and the device camera.
     private CameraBridgeViewBase mOpenCvCameraView;
 
+    //This is the callback object used when we initialize the OpenCV library asynchronously.
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
+        //This is the callback method called once the OpenCV manager is connected
         public void onManagerConnected(int status) {
             switch (status) {
+                //Once the OpenCV manager is successfully connected we can enable the
+                //camera interaction with the defined OpenCV camera view
                 case LoaderCallbackInterface.SUCCESS:
                 {
                     Log.i(TAG, "OpenCV loaded successfully");
@@ -65,12 +73,13 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); // for Full Screen of Activity
 
-        setContentView(R.layout.activity_color_blob_detection);
+        setContentView(R.layout.activity_color_blob_detection); // setting the layout file
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view);
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view); // id for OpenCV java camera view
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE); //Set the view as visible
+        //Register your activity as the callback object to handle camera frames
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
@@ -87,6 +96,10 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     {
         super.onResume();
         if (!OpenCVLoader.initDebug()) {
+            //Call the async initialization and pass the callback object we
+            //created later, and chose which version of OpenCV library to
+            //load. Just make sure that the OpenCV manager you installed
+            //supports the version you are trying to load.
             Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
         } else {
@@ -102,7 +115,11 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     }
 
     public void onCameraViewStarted(int width, int height) {
-        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mRgba = new Mat(height, width, CvType.CV_8UC4); // this means that the matrix will hold 8-bit unsigned characters for color intensity with four channel.
+
+        /**CV_(Data type size [“8” | “16” | “32” | “64”])([“S” | “U” | “F” , for signed, unsigned
+        integers, or floating point numbers])(Number of channels[“C1 | C2 | C3 | C4”, for one,
+        two, three, or four channels respectively]) **/
         mDetector = new ColorBlobDetector();
         mSpectrum = new Mat();
         mBlobColorRgba = new Scalar(255);
@@ -166,7 +183,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     }
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        mRgba = inputFrame.rgba();
+        mRgba = inputFrame.rgba(); // retrieving the full camera frame using this method
 
         if (mIsColorSelected) {
             mDetector.processCirleHough(mRgba);
@@ -180,7 +197,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
             Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
             mSpectrum.copyTo(spectrumLabel);*/
         }
-
+        //We're returning the colored frame as is to be rendered on the screen.
         return mRgba;
     }
 

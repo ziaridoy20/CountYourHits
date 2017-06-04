@@ -1,9 +1,5 @@
 package fim.uni_passau.de.countyourhits;
 
-/**
- * Created by Nahid 002345 on 5/25/2017.
- */
-
 
 import android.util.Log;
 
