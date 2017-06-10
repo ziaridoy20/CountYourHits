@@ -168,7 +168,7 @@ public class ColorBlobDetector {
 
     public DetectedCircle processCircleHough(Mat rgbaImage) {
 
-        DetectedCircle mDetectedOuterCircle= new DetectedCircle();
+
 //        Imgproc.medianBlur(rgbaImage,rgbaImage,3);
 //        // Convert input image to HSV
 //        Mat hsv_image= new Mat();
@@ -193,7 +193,7 @@ public class ColorBlobDetector {
 //        //Imgproc.cvtColor(blk,blk,Imgproc.COLOR_BGR2GRAY);
 //        Imgproc.HoughCircles(red_hue_image, circles, CV_HOUGH_GRADIENT, 1, red_hue_image.rows()/8, 100, 20, 0, 0);
 
-
+        DetectedCircle mDetectedOuterCircle= new DetectedCircle();
         Mat blak_image= new Mat();
         Imgproc.cvtColor(rgbaImage, blak_image, Imgproc.COLOR_RGB2GRAY);
 
