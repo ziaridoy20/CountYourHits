@@ -1,4 +1,4 @@
-package fim.uni_passau.de.countyourhits;
+package fim.uni_passau.de.countyourhits.activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +23,10 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import fim.uni_passau.de.countyourhits.util.ColorBlobDetector;
+import fim.uni_passau.de.countyourhits.model.DetectedCircle;
+import fim.uni_passau.de.countyourhits.R;
+
 public class ColorBlobDetectionActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
 
     //A Tag to filter the log messages
@@ -32,7 +36,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     private Mat                  mRgba;
     private Scalar               mBlobColorRgba;
     private Scalar               mBlobColorHsv;
-    private ColorBlobDetector    mDetector;
+    private ColorBlobDetector mDetector;
     private Mat                  mSpectrum;
     private Size                 SPECTRUM_SIZE;
     private Scalar               CONTOUR_COLOR;
@@ -186,7 +190,31 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         mRgba = inputFrame.rgba(); // retrieving the full camera frame using this method
 
         if (mIsColorSelected) {
-            mDetector.processCirleHough(mRgba);
+            DetectedCircle mOuterCircle = new DetectedCircle();
+            DetectedCircle mInnerCircle = new DetectedCircle();
+
+            mOuterCircle= mDetector.processCircleHough(mRgba);
+            Log.d(TAG, "onCameraFrame: mOuterCircle " + mOuterCircle.isOuterCircleIn());
+            if(mOuterCircle != null && mOuterCircle.isOuterCircleIn()) {
+                //mInnerCircle= mDetector.processBlackCircle(mRgba);
+                mInnerCircle = mDetector.processCircleTest(mRgba,mOuterCircle);
+                Log.d(TAG,"mInnerCircle: " + mInnerCircle.getCirCoordinate() + " radius: "+mInnerCircle.getCirRadius());
+            }
+
+            if(mOuterCircle!= null && mInnerCircle!= null && mInnerCircle.isOuterCircleIn()){
+
+                double distance = Math.sqrt( Math.pow( (mInnerCircle.getCirCoordinate().x - mOuterCircle.getCirCoordinate().x), 2) +
+                        Math.pow( (mInnerCircle.getCirCoordinate().y - mOuterCircle.getCirCoordinate().y), 2));
+
+
+                Log.d(TAG,"Distance between " + distance);
+
+                if (distance < mOuterCircle.getCirRadius()){
+
+                }
+
+            }
+
             /*List<MatOfPoint> contours = mDetector.getContours();
             Log.e(TAG, "Contours count: " + contours.size());
             Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);*/

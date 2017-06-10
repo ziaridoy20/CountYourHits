@@ -1,8 +1,7 @@
-package fim.uni_passau.de.countyourhits;
+package fim.uni_passau.de.countyourhits.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -11,10 +10,11 @@ import android.view.WindowManager;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
+
+import fim.uni_passau.de.countyourhits.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener,CameraBridgeViewBase.CvCameraViewListener2 {
 

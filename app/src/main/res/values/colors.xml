@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#ff484b</color>
+    <color name="colorPrimaryDark">#ff0008</color>
+    <color name="colorAccent">#ff202c</color>
+    <color name="colorGrey">#fafafa</color>
+    <color name="colorWhite">#fff</color>
+    <color name="colorBlack">#000</color>
+    <color name="colorDarkGrey">#9a9a9a</color>
+    <color name="colorHeaderGrey">#bcbcbc</color>
+    <color name="colorLightRed">#ffeeee</color>
+    <color name="colorDarkRed">#bf0000</color>
+    <color name="alert_header_color">#ff0008</color>
+    <color name="success_header_color">#00ff00</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="list_divider">#ff404a</color>
+    <color name="list_row_start_color">#ffffff</color>
+    <color name="list_row_end_color">#ffffff</color>
+    <color name="list_row_hover_start_color">#ebeef0</color>
+    <color name="list_row_hover_end_color">#ebeef0</color>
+
+
+
+
+
+
+    <color name="divider_color">@color/main_color_500</color>
+
+    <color name="main_color_500">@color/material_purple_500</color>
+    <color name="main_color_50">@color/material_purple_50</color>
+    <color name="main_color_100">@color/material_purple_100</color>
+    <color name="main_color_200">@color/material_purple_200</color>
+    <color name="main_color_300">@color/material_purple_300</color>
+    <color name="main_color_400">@color/material_purple_400</color>
+    <color name="main_color_600">@color/material_purple_600</color>
+    <color name="main_color_700">@color/material_purple_700</color>
+    <color name="main_color_800">@color/material_purple_800</color>
+    <color name="main_color_900">@color/material_purple_900</color>
+    <color name="main_color_A100">@color/material_light_yellow_A100</color>
+    <color name="main_color_A200">@color/material_light_yellow_A200</color>
+    <color name="main_color_A400">@color/material_light_yellow_A400</color>
+
+    <color name="main_color_grey_500">@color/material_grey_500</color>
+    <color name="main_color_grey_50">@color/material_grey_50</color>
+    <color name="main_color_grey_100">@color/material_grey_100</color>
+    <color name="main_color_grey_200">@color/material_grey_200</color>
+    <color name="main_color_grey_300">@color/material_grey_300</color>
+    <color name="main_color_grey_400">@color/material_grey_400</color>
+    <color name="main_color_grey_600">@color/material_grey_600</color>
+    <color name="main_color_grey_700">@color/material_grey_700</color>
+    <color name="main_color_grey_800">@color/material_grey_800</color>
+    <color name="main_color_grey_900">@color/material_grey_900</color>
+
+
 </resources>
