@@ -52,4 +52,6 @@
     <color name="main_color_grey_900">@color/material_grey_900</color>
 
 
+    <color name="status_bar_color">#7EBCFC</color>
+    <color name="layout_border_color">#f9f7f7</color>
 </resources>
