@@ -21,6 +21,8 @@ import fim.uni_passau.de.countyourhits.model.DetectedCircle;
 import static org.opencv.imgproc.Imgproc.CV_HOUGH_GRADIENT;
 
 public class ColorBlobDetector {
+    public static int OUTER_CIRCLE_MIN_RADIUS=40;
+    public static int INNER_CIRCLE_MIN_RADIUS=5;
     // Lower and Upper bounds for range checking in HSV color space
     private Scalar mLowerBound = new Scalar(0);
     private Scalar mUpperBound = new Scalar(0);
@@ -153,12 +155,12 @@ public class ColorBlobDetector {
 //
 //            }
         }
-        if(radius > 10 && radius < mOuterCircle.getCirRadius()) {
+        if(radius > INNER_CIRCLE_MIN_RADIUS && radius < mOuterCircle.getCirRadius()) {
             mDetectedInnerCircle.setCirCoordinate(pt);
             mDetectedInnerCircle.setCirRadius(radius);
             mDetectedInnerCircle.setOuterCircleIn(true);
             Log.d("cv:center_in: ", pt + " &  radius_in " + radius);
-            Imgproc.circle(rgbaImage, pt, radius, new Scalar(0, 100, 255), 3);
+            //Imgproc.circle(rgbaImage, pt, radius, new Scalar(0, 100, 255), 3);
         }
         return mDetectedInnerCircle;
     }
@@ -215,7 +217,7 @@ public class ColorBlobDetector {
                 break;
             Point pt = new Point(Math.round(vCircle[0]),   Math.round(vCircle[1]));
             int radius = (int) Math.round(vCircle[2]);
-            if(radius > 40) {
+            if(radius > OUTER_CIRCLE_MIN_RADIUS) {
                 mCirCoX+=vCircle[0];
                 mCirCoY += vCircle[1];
                 mCirRadius+=radius;
@@ -229,7 +231,7 @@ public class ColorBlobDetector {
             mDetectedOuterCircle.setCirRadius(mCirRadius / detectedCircleCount);
             mDetectedOuterCircle.setOuterCircleIn(true);
             Log.d("cv:center_out: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
-            Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+            //Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
         }
         return  mDetectedOuterCircle;
 
@@ -276,7 +278,7 @@ public class ColorBlobDetector {
 //
 //            }
         }
-        if(radius > 10) {
+        if(radius > INNER_CIRCLE_MIN_RADIUS) {
             mDetectedInnerCircle.setCirCoordinate(pt);
             mDetectedInnerCircle.setCirRadius(radius);
             mDetectedInnerCircle.setOuterCircleIn(true);

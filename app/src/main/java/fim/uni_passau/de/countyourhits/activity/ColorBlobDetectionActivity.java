@@ -23,6 +23,8 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.List;
+
 import fim.uni_passau.de.countyourhits.util.ColorBlobDetector;
 import fim.uni_passau.de.countyourhits.model.DetectedCircle;
 import fim.uni_passau.de.countyourhits.R;
@@ -41,7 +43,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     private Size                 SPECTRUM_SIZE;
     private Scalar               CONTOUR_COLOR;
 
-
+    public static List<DetectedCircle> mInnerCircleList;
     //A class used to implement the interaction between OpenCV and the device camera.
     private CameraBridgeViewBase mOpenCvCameraView;
 
