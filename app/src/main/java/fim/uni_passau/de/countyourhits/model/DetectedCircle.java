@@ -8,9 +8,12 @@ import org.opencv.core.Point;
 
 public class DetectedCircle {
 
-    private boolean isOuterCircleIn = false;
+    private boolean isCircle = false;
+    private boolean isInnerCircle = false;
     private Point cirCoordinate;
     private int cirRadius;
+
+    private String cirImgPath;
 
     public DetectedCircle(){
 
@@ -32,11 +35,19 @@ public class DetectedCircle {
         this.cirCoordinate = cirCoordinate;
     }
 
-    public boolean isOuterCircleIn() {
-        return isOuterCircleIn;
+    public boolean isCircle() {
+        return isCircle;
     }
 
-    public void setOuterCircleIn(boolean outerCircleIn) {
-        isOuterCircleIn = outerCircleIn;
+    public void setCircle(boolean circle) {
+        isCircle = circle;
+    }
+
+    public String getCirImgPath() {
+        return cirImgPath;
+    }
+
+    public void setCirImgPath(String cirImgPath) {
+        this.cirImgPath = cirImgPath;
     }
 }

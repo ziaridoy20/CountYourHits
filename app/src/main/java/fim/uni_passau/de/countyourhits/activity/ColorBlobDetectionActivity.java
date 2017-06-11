@@ -1,4 +1,5 @@
 package fim.uni_passau.de.countyourhits.activity;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +24,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.util.ColorBlobDetector;
@@ -32,39 +34,39 @@ import fim.uni_passau.de.countyourhits.R;
 public class ColorBlobDetectionActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
 
     //A Tag to filter the log messages
-    private static final String  TAG = "OCVSample::Activity";
+    private static final String TAG = "OCVSample::Activity";
 
-    private boolean              mIsColorSelected = false;
-    private Mat                  mRgba;
-    private Scalar               mBlobColorRgba;
-    private Scalar               mBlobColorHsv;
+    private boolean mIsColorSelected = false;
+    private Mat mRgba;
+    private Scalar mBlobColorRgba;
+    private Scalar mBlobColorHsv;
     private ColorBlobDetector mDetector;
-    private Mat                  mSpectrum;
-    private Size                 SPECTRUM_SIZE;
-    private Scalar               CONTOUR_COLOR;
+    private Mat mSpectrum;
+    private Size SPECTRUM_SIZE;
+    private Scalar CONTOUR_COLOR;
 
     public static List<DetectedCircle> mInnerCircleList;
     //A class used to implement the interaction between OpenCV and the device camera.
     private CameraBridgeViewBase mOpenCvCameraView;
 
     //This is the callback object used when we initialize the OpenCV library asynchronously.
-    private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         //This is the callback method called once the OpenCV manager is connected
         public void onManagerConnected(int status) {
             switch (status) {
                 //Once the OpenCV manager is successfully connected we can enable the
                 //camera interaction with the defined OpenCV camera view
-                case LoaderCallbackInterface.SUCCESS:
-                {
+                case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
                     mOpenCvCameraView.enableView();
                     mOpenCvCameraView.setOnTouchListener(ColorBlobDetectionActivity.this);
-                } break;
-                default:
-                {
+                }
+                break;
+                default: {
                     super.onManagerConnected(status);
-                } break;
+                }
+                break;
             }
         }
     };
@@ -73,7 +75,9 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
@@ -90,16 +94,14 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     }
 
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
         if (!OpenCVLoader.initDebug()) {
             //Call the async initialization and pass the callback object we
@@ -124,14 +126,14 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         mRgba = new Mat(height, width, CvType.CV_8UC4); // this means that the matrix will hold 8-bit unsigned characters for color intensity with four channel.
 
         /**CV_(Data type size [“8” | “16” | “32” | “64”])([“S” | “U” | “F” , for signed, unsigned
-        integers, or floating point numbers])(Number of channels[“C1 | C2 | C3 | C4”, for one,
-        two, three, or four channels respectively]) **/
+         integers, or floating point numbers])(Number of channels[“C1 | C2 | C3 | C4”, for one,
+         two, three, or four channels respectively]) **/
         mDetector = new ColorBlobDetector();
         mSpectrum = new Mat();
         mBlobColorRgba = new Scalar(255);
         mBlobColorHsv = new Scalar(255);
         SPECTRUM_SIZE = new Size(200, 64);
-        CONTOUR_COLOR = new Scalar(255,0,0,255);
+        CONTOUR_COLOR = new Scalar(255, 0, 0, 255);
     }
 
     public void onCameraViewStopped() {
@@ -145,8 +147,8 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         int xOffset = (mOpenCvCameraView.getWidth() - cols) / 2;
         int yOffset = (mOpenCvCameraView.getHeight() - rows) / 2;
 
-        int x = (int)event.getX() - xOffset;
-        int y = (int)event.getY() - yOffset;
+        int x = (int) event.getX() - xOffset;
+        int y = (int) event.getY() - yOffset;
 
         Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
 
@@ -154,11 +156,11 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
 
         Rect touchedRect = new Rect();
 
-        touchedRect.x = (x>4) ? x-4 : 0;
-        touchedRect.y = (y>4) ? y-4 : 0;
+        touchedRect.x = (x > 4) ? x - 4 : 0;
+        touchedRect.y = (y > 4) ? y - 4 : 0;
 
-        touchedRect.width = (x+4 < cols) ? x + 4 - touchedRect.x : cols - touchedRect.x;
-        touchedRect.height = (y+4 < rows) ? y + 4 - touchedRect.y : rows - touchedRect.y;
+        touchedRect.width = (x + 4 < cols) ? x + 4 - touchedRect.x : cols - touchedRect.x;
+        touchedRect.height = (y + 4 < rows) ? y + 4 - touchedRect.y : rows - touchedRect.y;
 
         Mat touchedRegionRgba = mRgba.submat(touchedRect);
 
@@ -167,7 +169,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
 
         // Calculate average color of touched region
         mBlobColorHsv = Core.sumElems(touchedRegionHsv);
-        int pointCount = touchedRect.width*touchedRect.height;
+        int pointCount = touchedRect.width * touchedRect.height;
         for (int i = 0; i < mBlobColorHsv.val.length; i++)
             mBlobColorHsv.val[i] /= pointCount;
 
@@ -195,40 +197,41 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
             DetectedCircle mOuterCircle = new DetectedCircle();
             DetectedCircle mInnerCircle = new DetectedCircle();
 
-            mOuterCircle= mDetector.processCircleHough(mRgba);
-            Log.d(TAG, "onCameraFrame: mOuterCircle " + mOuterCircle.isOuterCircleIn());
-            if(mOuterCircle != null && mOuterCircle.isOuterCircleIn()) {
+            mOuterCircle = mDetector.processCircleHough(mRgba);
+            Log.d(TAG, "onCameraFrame: mOuterCircle " + mOuterCircle.isCircle());
+            if (mOuterCircle != null && mOuterCircle.isCircle()) {
                 //mInnerCircle= mDetector.processBlackCircle(mRgba);
-                mInnerCircle = mDetector.processCircleTest(mRgba,mOuterCircle);
-                Log.d(TAG,"mInnerCircle: " + mInnerCircle.getCirCoordinate() + " radius: "+mInnerCircle.getCirRadius());
-            }
 
-            if(mOuterCircle!= null && mInnerCircle!= null && mInnerCircle.isOuterCircleIn()){
+                mInnerCircle = mDetector.processCircleTest(mRgba, mOuterCircle);
+                Log.d(TAG, "mInnerCircle: " + mInnerCircle.getCirCoordinate() + " radius: " + mInnerCircle.getCirRadius());
 
-                double distance = Math.sqrt( Math.pow( (mInnerCircle.getCirCoordinate().x - mOuterCircle.getCirCoordinate().x), 2) +
-                        Math.pow( (mInnerCircle.getCirCoordinate().y - mOuterCircle.getCirCoordinate().y), 2));
+                if (mInnerCircle != null && mInnerCircle.isCircle()) {
+
+                    double mCircleDistance = Math.sqrt(Math.pow((mInnerCircle.getCirCoordinate().x - mOuterCircle.getCirCoordinate().x), 2) +
+                            Math.pow((mInnerCircle.getCirCoordinate().y - mOuterCircle.getCirCoordinate().y), 2));
 
 
-                Log.d(TAG,"Distance between " + distance);
+                    Log.d(TAG, "Distance between " + mCircleDistance);
 
-                if (distance < mOuterCircle.getCirRadius()){
+                    if (mCircleDistance <= mOuterCircle.getCirRadius()) {
+                        Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+                        Imgproc.circle(mRgba, mInnerCircle.getCirCoordinate(), mInnerCircle.getCirRadius(), new Scalar(100, 100, 255), 3);
+                        Imgproc.line(mRgba, mOuterCircle.getCirCoordinate(), mInnerCircle.getCirCoordinate(), new Scalar(255, 255, 255), 3);
+                        Imgproc.putText(mRgba, convertDouble2String(mCircleDistance), mInnerCircle.getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
+                        mDetector.saveTargetImage(mRgba);
+                        mInnerCircleList.add(mInnerCircle);
+                    } else {
 
+                    }
                 }
-
             }
-
-            /*List<MatOfPoint> contours = mDetector.getContours();
-            Log.e(TAG, "Contours count: " + contours.size());
-            Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);*/
-
-            /*Mat colorLabel = mRgba.submat(4, 68, 4, 68);
-            colorLabel.setTo(mBlobColorRgba);
-
-            Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
-            mSpectrum.copyTo(spectrumLabel);*/
         }
-        //We're returning the colored frame as is to be rendered on the screen.
         return mRgba;
+    }
+
+    private String convertDouble2String(double mDbl) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        return df.format(mDbl);
     }
 
     private Scalar converScalarHsv2Rgba(Scalar hsvColor) {

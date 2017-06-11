@@ -1,6 +1,7 @@
 package fim.uni_passau.de.countyourhits.util;
 
 
+import android.os.Environment;
 import android.util.Log;
 
 import org.opencv.core.Core;
@@ -10,9 +11,13 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -158,7 +163,7 @@ public class ColorBlobDetector {
         if(radius > INNER_CIRCLE_MIN_RADIUS && radius < mOuterCircle.getCirRadius()) {
             mDetectedInnerCircle.setCirCoordinate(pt);
             mDetectedInnerCircle.setCirRadius(radius);
-            mDetectedInnerCircle.setOuterCircleIn(true);
+            mDetectedInnerCircle.setCircle(true);
             Log.d("cv:center_in: ", pt + " &  radius_in " + radius);
             //Imgproc.circle(rgbaImage, pt, radius, new Scalar(0, 100, 255), 3);
         }
@@ -229,7 +234,7 @@ public class ColorBlobDetector {
         if(detectedCircleCount > 0) {
             mDetectedOuterCircle.setCirCoordinate(new Point((mCirCoX / detectedCircleCount), (mCirCoY / detectedCircleCount)));
             mDetectedOuterCircle.setCirRadius(mCirRadius / detectedCircleCount);
-            mDetectedOuterCircle.setOuterCircleIn(true);
+            mDetectedOuterCircle.setCircle(true);
             Log.d("cv:center_out: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
             //Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
         }
@@ -281,13 +286,29 @@ public class ColorBlobDetector {
         if(radius > INNER_CIRCLE_MIN_RADIUS) {
             mDetectedInnerCircle.setCirCoordinate(pt);
             mDetectedInnerCircle.setCirRadius(radius);
-            mDetectedInnerCircle.setOuterCircleIn(true);
+            mDetectedInnerCircle.setCircle(true);
             Log.d("cv:center_in: ", pt + " &  radius_in " + radius);
             Imgproc.circle(rgbaImage, pt, radius, new Scalar(0, 255, 255), 3);
         }
         return mDetectedInnerCircle;
     }
 
+    public void saveTargetImage(Mat mSavedImg){
+        File sdRoot = Environment.getExternalStorageDirectory();
+        if (! sdRoot.exists()){
+            if (! sdRoot.mkdirs()){
+            }
+        }
+
+        String dir = "/DCIM/DirtHit/";
+        String fileName = "IMG_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()).toString() + ".jpg";
+        File mkDir = new File(sdRoot, dir);
+        mkDir.mkdirs();
+        File pictureFile = new File(sdRoot, dir + fileName);
+
+        Imgcodecs.imwrite("/sdcard/" + dir + fileName,mSavedImg);
+
+    }
     public List<MatOfPoint> getContours() {
         return mContours;
     }
