@@ -25,11 +25,11 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.text.DecimalFormat;
-import java.util.List;
+import java.util.ArrayList;
 
-import fim.uni_passau.de.countyourhits.util.ColorBlobDetector;
-import fim.uni_passau.de.countyourhits.model.DetectedCircle;
 import fim.uni_passau.de.countyourhits.R;
+import fim.uni_passau.de.countyourhits.model.DetectedCircle;
+import fim.uni_passau.de.countyourhits.util.ColorBlobDetector;
 
 public class ColorBlobDetectionActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
 
@@ -45,7 +45,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
 
-    public static List<DetectedCircle> mInnerCircleList;
+    public static ArrayList<DetectedCircle> mInnerCircleList=new ArrayList<>();
     //A class used to implement the interaction between OpenCV and the device camera.
     private CameraBridgeViewBase mOpenCvCameraView;
 
@@ -230,7 +230,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     }
 
     private String convertDouble2String(double mDbl) {
-        DecimalFormat df = new DecimalFormat("#.##");
+        DecimalFormat df = new DecimalFormat("#.###");
         return df.format(mDbl);
     }
 
