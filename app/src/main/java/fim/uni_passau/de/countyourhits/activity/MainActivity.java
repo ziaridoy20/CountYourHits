@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void btnConnectionClick(View view) {
-        Intent connectionIntent = new Intent(this, DartWiFiDirectActivity.class);
+        Intent connectionIntent = new Intent(this, ConnectionActivity.class);
         startActivity(connectionIntent);
     }
 }
