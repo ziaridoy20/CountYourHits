@@ -10,15 +10,21 @@
         android:orientation="vertical"
         android:gravity="center_vertical"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        tools:layout_editor_absoluteY="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:padding="20dp">
 
         <Button
             android:id="@+id/btn_camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Camera"
             android:layout_gravity="center"
-            android:onClick="btnCameraClick"/>
+            android:background="@color/material_blue_50"
+            android:onClick="btnCameraClick"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Camera" />
 
         <Button
             android:id="@+id/btn_connection"
@@ -26,6 +32,9 @@
             android:layout_height="wrap_content"
             android:text="Connection"
             android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/material_blue_50"
             android:onClick="btnConnectionClick"/>
     </LinearLayout>
 </RelativeLayout>
