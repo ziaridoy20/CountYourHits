@@ -96,7 +96,7 @@
     <style name="TextViewAppearance.Title3" parent="@style/TextViewAppearance">
         <item name="typeface">robotoBlack</item>
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/main_color_grey_400</item>
+        <item name="android:textColor">@color/main_color_grey_900</item>
     </style>
 
     <style name="TextViewAppearance.Body3" parent="@style/TextViewAppearance">

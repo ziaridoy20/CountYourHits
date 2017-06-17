@@ -82,7 +82,7 @@
 
     <!-- Blue -->
     <color name="material_blue_500">#478fcc</color>
-    <color name="material_blue_50">#e4f1fb</color>
+    <color name="material_blue_50">#76a9d0</color>
     <color name="material_blue_100">#bdddf4</color>
     <color name="material_blue_200">#95c7ec</color>
     <color name="material_blue_300">#70b2e1</color>
@@ -120,9 +120,7 @@
     <color name="material_cyan_300">#5ac7d9</color>
     <color name="material_cyan_400">#35c1d6</color>
     <color name="material_cyan_600">#00abc0</color>
-    <color name="material_cyan_700">#0297a7</color>
     <color name="material_cyan_800">#00838f</color>
-    <color name="material_cyan_900">#016064</color>
     <color name="material_cyan_A100">#9cd9e5</color>
     <color name="material_cyan_A200">#70ccdd</color>
     <color name="material_cyan_A400">#5dc9e7</color>
