@@ -204,11 +204,11 @@ public class ColorBlobDetector {
         Mat blak_image= new Mat();
         Imgproc.cvtColor(rgbaImage, blak_image, Imgproc.COLOR_RGB2GRAY);
 
-        Imgproc.GaussianBlur(blak_image, blak_image, new Size(19,19), 2, 2);
+        Imgproc.GaussianBlur(blak_image, blak_image, new Size(7,7), 2, 2);
         Imgproc.adaptiveThreshold(blak_image, blak_image, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 15, 17);
         Mat circles=new Mat();
         Mat blk=new Mat();
-        Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows()/2, 100, 30,0,0);
+        Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows()/2, 100, 35,0,0);
 
 
         int detectedCircleCount=0;
@@ -216,12 +216,16 @@ public class ColorBlobDetector {
         double mCirCoX=0.0f;
         double mCirCoY=0.0f;
         int mCirRadius=0;
+
+        int cirCount=circles.cols();
         for (int x = 0; x < circles.cols(); x++) {
+
             double vCircle[] = circles.get(0, x);
             if (vCircle == null)
                 break;
             Point pt = new Point(Math.round(vCircle[0]),   Math.round(vCircle[1]));
             int radius = (int) Math.round(vCircle[2]);
+            Imgproc.circle(rgbaImage, pt, radius, new Scalar(100, 100, 255), 3);
             if(radius > OUTER_CIRCLE_MIN_RADIUS) {
                 mCirCoX+=vCircle[0];
                 mCirCoY += vCircle[1];
@@ -293,6 +297,13 @@ public class ColorBlobDetector {
         return mDetectedInnerCircle;
     }
 
+    public void drawCalibLine(Mat srcImg){
+        int imgHeight=srcImg.height();
+        int imgWidth=srcImg.width();
+        Scalar colorVal= new Scalar(255,255,255);
+        Imgproc.line(srcImg,new Point(0,imgHeight/2),new Point(imgWidth,imgHeight/2), colorVal,1);
+        Imgproc.line(srcImg,new Point(imgWidth/2,0),new Point(imgWidth/2,imgHeight), colorVal,1);
+    }
     public void saveTargetImage(Mat mSavedImg){
         File sdRoot = Environment.getExternalStorageDirectory();
         if (! sdRoot.exists()){

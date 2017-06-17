@@ -28,7 +28,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activity.ColorBlobDetectionActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
 
         <service
             android:name=".util.DartFileTransferService"
@@ -42,8 +42,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.DartWiFiDirectActivity" />
-        <activity android:name=".activity.ResultActivity"></activity>
-        <activity android:name=".activity.ConnectionActivity"></activity>
+        <activity android:name=".activity.ResultActivity" />
+        <activity android:name=".activity.ConnectionActivity" />
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

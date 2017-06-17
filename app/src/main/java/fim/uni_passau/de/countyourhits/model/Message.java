@@ -20,6 +20,8 @@ public class Message{
     @JsonField
     public String description;
 
+    @JsonField
+    public String imgBlob;
     /*
      * Note that since this field isn't annotated as a
      * @JsonField, LoganSquare will ignore it when parsing

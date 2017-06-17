@@ -1,11 +1,14 @@
 package fim.uni_passau.de.countyourhits.activity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,9 +21,11 @@ import com.peak.salut.SalutDataReceiver;
 import com.peak.salut.SalutDevice;
 import com.peak.salut.SalutServiceData;
 
+import java.io.File;
 import java.io.IOException;
 
 import fim.uni_passau.de.countyourhits.R;
+import fim.uni_passau.de.countyourhits.app.Helper;
 import fim.uni_passau.de.countyourhits.model.Message;
 
 public class ConnectionActivity extends AppCompatActivity  implements SalutDataCallback, View.OnClickListener{
@@ -32,6 +37,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
     public Button hostingBtn;
     public Button discoverBtn;
     public Button sendMsgBtn;
+    public ImageView streamImg;
     public TextView msg;
     SalutDataCallback callback;
     @Override
@@ -43,6 +49,8 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
 
         sendMsgBtn = (Button) findViewById(R.id.btn_send_msg);
         msg=(TextView)findViewById(R.id.textView);
+        streamImg=(ImageView)findViewById(R.id.iv_streamImage);
+
         hostingBtn.setOnClickListener(this);
         discoverBtn.setOnClickListener(this);
         sendMsgBtn.setOnClickListener(this);
@@ -151,7 +159,18 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
 
     private void sendMsg(){
         Message myMessage = new Message();
-        myMessage.description = "See you on the other side!";
+        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DirtHit/IMG_20170616_182911.jpg";
+        File imgFile = new File(filePath);
+        if(imgFile.exists()){
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            myMessage.imgBlob=Helper.bitmapToString(myBitmap);
+            myMessage.description = "contains image string";
+        }
+        else {
+            myMessage.description="file not exist!! please check file path & image name!!!";
+        }
+
+
 
         network.sendToAllDevices(myMessage, new SalutCallback() {
             @Override
@@ -199,6 +218,14 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         try
         {
             Message newMessage = LoganSquare.parse(String.valueOf(data), Message.class);
+            if( newMessage.imgBlob != null && newMessage.imgBlob != ""){
+                Bitmap streamImgBitmap=Helper.stringToBitmap(newMessage.imgBlob);
+                streamImg.setImageBitmap(streamImgBitmap);
+            }
+            else
+            {
+
+            }
             Log.d(TAG, newMessage.description);  //See you on the other side!
             //Do other stuff with data.
             msg.setText(newMessage.description);

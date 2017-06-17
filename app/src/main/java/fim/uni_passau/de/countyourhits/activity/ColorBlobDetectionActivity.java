@@ -194,11 +194,12 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         mRgba = inputFrame.rgba(); // retrieving the full camera frame using this method
 
         if (mIsColorSelected) {
-            DetectedCircle mOuterCircle = new DetectedCircle();
-            DetectedCircle mInnerCircle = new DetectedCircle();
-
+            DetectedCircle mOuterCircle;
+            DetectedCircle mInnerCircle;
+            mDetector.drawCalibLine(mRgba);
             mOuterCircle = mDetector.processCircleHough(mRgba);
             Log.d(TAG, "onCameraFrame: mOuterCircle " + mOuterCircle.isCircle());
+            //Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
             if (mOuterCircle != null && mOuterCircle.isCircle()) {
                 //mInnerCircle= mDetector.processBlackCircle(mRgba);
 
@@ -214,7 +215,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
                     Log.d(TAG, "Distance between " + mCircleDistance);
 
                     if (mCircleDistance <= mOuterCircle.getCirRadius()) {
-                        Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+
                         Imgproc.circle(mRgba, mInnerCircle.getCirCoordinate(), mInnerCircle.getCirRadius(), new Scalar(100, 100, 255), 3);
                         Imgproc.line(mRgba, mOuterCircle.getCirCoordinate(), mInnerCircle.getCirCoordinate(), new Scalar(255, 255, 255), 3);
                         Imgproc.putText(mRgba, convertDouble2String(mCircleDistance), mInnerCircle.getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
