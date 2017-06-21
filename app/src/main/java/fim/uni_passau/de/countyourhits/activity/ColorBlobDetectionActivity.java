@@ -24,10 +24,10 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import fim.uni_passau.de.countyourhits.R;
+import fim.uni_passau.de.countyourhits.app.Helper;
 import fim.uni_passau.de.countyourhits.model.DetectedCircle;
 import fim.uni_passau.de.countyourhits.util.ColorBlobDetector;
 
@@ -45,7 +45,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
 
-    public static ArrayList<DetectedCircle> mInnerCircleList=new ArrayList<>();
+    public static ArrayList<DetectedCircle> mInnerCircleList = new ArrayList<>();
     //A class used to implement the interaction between OpenCV and the device camera.
     private CameraBridgeViewBase mOpenCvCameraView;
 
@@ -196,7 +196,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         if (mIsColorSelected) {
             DetectedCircle mOuterCircle;
             DetectedCircle mInnerCircle;
-            mDetector.drawCalibLine(mRgba);
+            //mDetector.drawCalibLine(mRgba);
             mOuterCircle = mDetector.processCircleHough(mRgba);
             Log.d(TAG, "onCameraFrame: mOuterCircle " + mOuterCircle.isCircle());
             //Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
@@ -218,8 +218,8 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
 
                         Imgproc.circle(mRgba, mInnerCircle.getCirCoordinate(), mInnerCircle.getCirRadius(), new Scalar(100, 100, 255), 3);
                         Imgproc.line(mRgba, mOuterCircle.getCirCoordinate(), mInnerCircle.getCirCoordinate(), new Scalar(255, 255, 255), 3);
-                        Imgproc.putText(mRgba, convertDouble2String(mCircleDistance), mInnerCircle.getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
-                        mDetector.saveTargetImage(mRgba);
+                        Imgproc.putText(mRgba, Helper.convertDouble2String(mCircleDistance), mInnerCircle.getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
+                        //mDetector.saveTargetImage(mRgba);
                         mInnerCircleList.add(mInnerCircle);
                     } else {
 
@@ -230,10 +230,6 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         return mRgba;
     }
 
-    private String convertDouble2String(double mDbl) {
-        DecimalFormat df = new DecimalFormat("#.###");
-        return df.format(mDbl);
-    }
 
     private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
         Mat pointMatRgba = new Mat();

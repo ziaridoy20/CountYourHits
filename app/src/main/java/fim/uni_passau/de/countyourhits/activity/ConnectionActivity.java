@@ -159,10 +159,10 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
 
     private void sendMsg(){
         Message myMessage = new Message();
-        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DirtHit/IMG_20170616_182911.jpg";
-        File imgFile = new File(filePath);
-        if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DirtHit/";
+        File[] imgFile = new File(filePath).listFiles();
+        if(imgFile != null && imgFile.length != 0 && imgFile[0].exists()){
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile[0].getAbsolutePath());
             myMessage.imgBlob=Helper.bitmapToString(myBitmap);
             myMessage.description = "contains image string";
         }

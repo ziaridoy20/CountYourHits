@@ -7,6 +7,7 @@ import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.DecimalFormat;
 
 /**
  * Created by Nahid 002345 on 6/17/2017.
@@ -39,5 +40,10 @@ public class Helper {
 
     public static String getRootDirectoryPath(){
         return Environment.getExternalStorageDirectory().toString();
+    }
+
+    public static String convertDouble2String(double mDbl) {
+        DecimalFormat df = new DecimalFormat("#.###");
+        return df.format(mDbl);
     }
 }

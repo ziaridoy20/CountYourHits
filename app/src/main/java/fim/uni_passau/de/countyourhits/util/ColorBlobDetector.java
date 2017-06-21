@@ -8,7 +8,9 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -175,41 +177,20 @@ public class ColorBlobDetector {
 
     public DetectedCircle processCircleHough(Mat rgbaImage) {
 
-
-//        Imgproc.medianBlur(rgbaImage,rgbaImage,3);
-//        // Convert input image to HSV
-//        Mat hsv_image= new Mat();
-//        Imgproc.cvtColor(rgbaImage, hsv_image, Imgproc.COLOR_RGB2HSV);
-//
-//        // Threshold the HSV image, keep only the red pixels
-//        Mat lower_red_hue_range=new Mat();
-//        Mat upper_red_hue_range=new Mat();
-//        Core.inRange(hsv_image, new Scalar(0, 100, 100), new Scalar(10, 255, 255), lower_red_hue_range);
-//        Core.inRange(hsv_image, new Scalar(160, 100, 100), new Scalar(179, 255, 255), upper_red_hue_range);
-//
-//        // Combine the above two images
-//        Mat red_hue_image=new Mat();
-//        Core.addWeighted(lower_red_hue_range, 1.0, upper_red_hue_range, 1.0, 0.0, red_hue_image);
-//
-//        Imgproc.GaussianBlur(red_hue_image, red_hue_image, new Size(19,19), 2, 2);
-//
-//        // Use the Hough transform to detect circles in the combined threshold image
-//        Mat circles=new Mat();
-//        Mat blk=new Mat();
-//        //Imgproc.cvtColor(red_hue_image,rgbaImage,Imgproc.COLOR_HSV2BGR_FULL);
-//        //Imgproc.cvtColor(blk,blk,Imgproc.COLOR_BGR2GRAY);
-//        Imgproc.HoughCircles(red_hue_image, circles, CV_HOUGH_GRADIENT, 1, red_hue_image.rows()/8, 100, 20, 0, 0);
-
         DetectedCircle mDetectedOuterCircle= new DetectedCircle();
         Mat blak_image= new Mat();
         Imgproc.cvtColor(rgbaImage, blak_image, Imgproc.COLOR_RGB2GRAY);
 
         Imgproc.GaussianBlur(blak_image, blak_image, new Size(7,7), 2, 2);
-        Imgproc.adaptiveThreshold(blak_image, blak_image, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 15, 17);
+        //Imgproc.threshold(blak_image,blak_image,127,255,Imgproc.THRESH_BINARY_INV);
+
+        Imgproc.adaptiveThreshold(blak_image, blak_image, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 19, 25);
+        //saveTargetImage(blak_image);
         Mat circles=new Mat();
         Mat blk=new Mat();
-        Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows()/2, 100, 35,0,0);
+        Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows(), 100, 35,0,0);
 
+        saveTargetImage(blak_image);
 
         int detectedCircleCount=0;
         //Point[] mMultCirclePoint= new Point[circles.cols()];
@@ -225,7 +206,7 @@ public class ColorBlobDetector {
                 break;
             Point pt = new Point(Math.round(vCircle[0]),   Math.round(vCircle[1]));
             int radius = (int) Math.round(vCircle[2]);
-            Imgproc.circle(rgbaImage, pt, radius, new Scalar(100, 100, 255), 3);
+            //Imgproc.circle(rgbaImage, pt, radius, new Scalar(100, 100, 255), 3);
             if(radius > OUTER_CIRCLE_MIN_RADIUS) {
                 mCirCoX+=vCircle[0];
                 mCirCoY += vCircle[1];
@@ -239,9 +220,53 @@ public class ColorBlobDetector {
             mDetectedOuterCircle.setCirCoordinate(new Point((mCirCoX / detectedCircleCount), (mCirCoY / detectedCircleCount)));
             mDetectedOuterCircle.setCirRadius(mCirRadius / detectedCircleCount);
             mDetectedOuterCircle.setCircle(true);
+            //Imgproc.minEnclosingCircle(circles.,mDetectedOuterCircle.getCirCoordinate(),mDetectedOuterCircle.getCirRadius());
             Log.d("cv:center_out: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
-            //Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+            Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
         }
+        return  mDetectedOuterCircle;
+
+    }
+
+
+    public DetectedCircle processCircleContour(Mat rgbaImage) {
+        DetectedCircle mDetectedOuterCircle= new DetectedCircle();
+        Mat blak_image= new Mat();
+        Imgproc.cvtColor(rgbaImage, blak_image, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.GaussianBlur(blak_image, blak_image, new Size(11,11), 2, 2);
+        //Imgproc.adaptiveThreshold(blak_image, blak_image, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 19, 25);
+        Imgproc.Canny(blak_image,blak_image,200,50);
+        saveTargetImage(blak_image);
+        List<MatOfPoint> contours=new ArrayList<MatOfPoint>();
+        Mat blk=new Mat();
+        Imgproc.findContours(blak_image, contours,blk,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_NONE);
+
+//init
+        List<MatOfPoint2f> contours2f   = new ArrayList<MatOfPoint2f>();
+        List<MatOfPoint2f> polyMOP2f    = new ArrayList<MatOfPoint2f>();
+        List<MatOfPoint> polyMOP        = new ArrayList<MatOfPoint>();
+        Rect[] boundRect    = new Rect[contours.size()];
+        Point[] mPusat      = new Point[contours.size()];
+        float[] mJejari     = new float[contours.size()];
+
+//initialize the Lists ?
+        for (int i = 0; i < contours.size(); i++) {
+            contours2f.add(new MatOfPoint2f());
+            polyMOP2f.add(new MatOfPoint2f());
+            polyMOP.add(new MatOfPoint());
+        }
+
+//Convert to MatOfPoint2f + approximate contours to polygon + get bounding rects and circles
+        for (int i = 0; i < contours.size(); i++) {
+            contours.get(i).convertTo(contours2f.get(i), CvType.CV_32FC2);
+            Imgproc.approxPolyDP(contours2f.get(i), polyMOP2f.get(i), 3, true);
+            polyMOP2f.get(i).convertTo(polyMOP.get(i), CvType.CV_32S);
+            boundRect[i] = Imgproc.boundingRect(polyMOP.get(i));
+            Imgproc.minEnclosingCircle(polyMOP2f.get(i), mPusat[i], mJejari);
+            if(mPusat[i] != null)
+            Imgproc.circle(rgbaImage,mPusat[i],(int)mJejari[i],new Scalar(0, 0, 255), 3);
+        }
+
         return  mDetectedOuterCircle;
 
     }
