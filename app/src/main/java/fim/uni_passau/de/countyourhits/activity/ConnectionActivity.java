@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.app.Helper;
-import fim.uni_passau.de.countyourhits.model.Message;
+import fim.uni_passau.de.countyourhits.model.ResultResponse;
 
 public class ConnectionActivity extends AppCompatActivity  implements SalutDataCallback, View.OnClickListener{
 
@@ -158,21 +158,21 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
     }
 
     private void sendMsg(){
-        Message myMessage = new Message();
+        ResultResponse myResultResponse = new ResultResponse();
         String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DirtHit/";
         File[] imgFile = new File(filePath).listFiles();
         if(imgFile != null && imgFile.length != 0 && imgFile[0].exists()){
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile[0].getAbsolutePath());
-            myMessage.imgBlob=Helper.bitmapToString(myBitmap);
-            myMessage.description = "contains image string";
+            myResultResponse.imgBlob=Helper.bitmapToString(myBitmap);
+            myResultResponse.description = "contains image string";
         }
         else {
-            myMessage.description="file not exist!! please check file path & image name!!!";
+            myResultResponse.description="file not exist!! please check file path & image name!!!";
         }
 
 
 
-        network.sendToAllDevices(myMessage, new SalutCallback() {
+        network.sendToAllDevices(myResultResponse, new SalutCallback() {
             @Override
             public void call() {
                 Log.e(TAG, "Oh no! The data failed to send.");
@@ -180,7 +180,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         });
 
         /*
-        network.sendToHost(myMessage, new SalutCallback() {
+        network.sendToHost(myResultResponse, new SalutCallback() {
             @Override
             public void call() {
                 Log.e(TAG, "Oh no! The data failed to send.");
@@ -217,18 +217,18 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         Toast.makeText(getApplicationContext(),"received",Toast.LENGTH_SHORT).show();
         try
         {
-            Message newMessage = LoganSquare.parse(String.valueOf(data), Message.class);
-            if( newMessage.imgBlob != null && newMessage.imgBlob != ""){
-                Bitmap streamImgBitmap=Helper.stringToBitmap(newMessage.imgBlob);
+            ResultResponse newResultResponse = LoganSquare.parse(String.valueOf(data), ResultResponse.class);
+            if( newResultResponse.imgBlob != null && newResultResponse.imgBlob != ""){
+                Bitmap streamImgBitmap=Helper.stringToBitmap(newResultResponse.imgBlob);
                 streamImg.setImageBitmap(streamImgBitmap);
             }
             else
             {
 
             }
-            Log.d(TAG, newMessage.description);  //See you on the other side!
+            Log.d(TAG, newResultResponse.description);  //See you on the other side!
             //Do other stuff with data.
-            msg.setText(newMessage.description);
+            msg.setText(newResultResponse.description);
         }
         catch (IOException ex)
         {

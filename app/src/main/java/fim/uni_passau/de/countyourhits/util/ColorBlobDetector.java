@@ -190,7 +190,7 @@ public class ColorBlobDetector {
         Mat blk=new Mat();
         Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows(), 100, 35,0,0);
 
-        saveTargetImage(blak_image);
+        //saveTargetImage(blak_image);
 
         int detectedCircleCount=0;
         //Point[] mMultCirclePoint= new Point[circles.cols()];
@@ -220,9 +220,51 @@ public class ColorBlobDetector {
             mDetectedOuterCircle.setCirCoordinate(new Point((mCirCoX / detectedCircleCount), (mCirCoY / detectedCircleCount)));
             mDetectedOuterCircle.setCirRadius(mCirRadius / detectedCircleCount);
             mDetectedOuterCircle.setCircle(true);
+
+            Log.d("cv:center_out: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
+            Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+        }
+        return  mDetectedOuterCircle;
+
+    }
+
+    public DetectedCircle processWhiteCircleHough(Mat rgbaImage) {
+
+        DetectedCircle mDetectedOuterCircle= new DetectedCircle();
+        Mat blak_image= new Mat();
+        Imgproc.cvtColor(rgbaImage, blak_image, Imgproc.COLOR_RGB2GRAY);
+
+        Imgproc.GaussianBlur(blak_image, blak_image, new Size(7,7), 2, 2);
+        Mat circles=new Mat();
+        Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows(), 100, 30,0,0);
+
+        int detectedCircleCount=0;
+        double mCirCoX=0.0f;
+        double mCirCoY=0.0f;
+        int mCirRadius=0;
+
+        for (int x = 0; x < circles.cols(); x++) {
+
+            double vCircle[] = circles.get(0, x);
+            if (vCircle == null)
+                break;
+            Point pt = new Point(Math.round(vCircle[0]),   Math.round(vCircle[1]));
+            int radius = (int) Math.round(vCircle[2]);
+            if(radius > OUTER_CIRCLE_MIN_RADIUS) {
+                mCirCoX+=vCircle[0];
+                mCirCoY += vCircle[1];
+                mCirRadius+=radius;
+                detectedCircleCount++;
+            }
+        }
+        if(detectedCircleCount > 0) {
+            mDetectedOuterCircle.setCirCoordinate(new Point((mCirCoX / detectedCircleCount), (mCirCoY / detectedCircleCount)));
+            mDetectedOuterCircle.setCirRadius(mCirRadius / detectedCircleCount);
+            mDetectedOuterCircle.setCircle(true);
             //Imgproc.minEnclosingCircle(circles.,mDetectedOuterCircle.getCirCoordinate(),mDetectedOuterCircle.getCirRadius());
             Log.d("cv:center_out: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
             Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+            saveTargetImage(rgbaImage);
         }
         return  mDetectedOuterCircle;
 

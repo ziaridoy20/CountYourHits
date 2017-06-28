@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(cameraIntent);
                 }
                 else{
-                    Intent connectionIntent = new Intent(getApplicationContext(), ConnectionActivity.class);
+                    Intent connectionIntent = new Intent(getApplicationContext(), ResultActivity.class);
                     startActivity(connectionIntent);
                 }
             }

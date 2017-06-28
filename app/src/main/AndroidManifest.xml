@@ -29,9 +29,6 @@
             android:name=".activity.ColorBlobDetectionActivity"
             android:screenOrientation="landscape" />
 
-        <service
-            android:name=".util.DartFileTransferService"
-            android:enabled="true" />
 
         <activity android:name=".activity.MainActivity">
             <intent-filter>

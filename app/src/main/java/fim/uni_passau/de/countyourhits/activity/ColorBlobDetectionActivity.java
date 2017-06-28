@@ -195,14 +195,17 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
 
         if (mIsColorSelected) {
             DetectedCircle mOuterCircle;
+            DetectedCircle mOuterWhiteCircle;
             DetectedCircle mInnerCircle;
             //mDetector.drawCalibLine(mRgba);
+            //mOuterWhiteCircle = mDetector.processWhiteCircleHough(mRgba);
+            //Imgproc.circle(mRgba, mOuterWhiteCircle.getCirCoordinate(), mOuterWhiteCircle.getCirRadius(), new Scalar(0, 0, 255), 2);
             mOuterCircle = mDetector.processCircleHough(mRgba);
             Log.d(TAG, "onCameraFrame: mOuterCircle " + mOuterCircle.isCircle());
-            //Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+
             if (mOuterCircle != null && mOuterCircle.isCircle()) {
                 //mInnerCircle= mDetector.processBlackCircle(mRgba);
-
+                //Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 2);
                 mInnerCircle = mDetector.processCircleTest(mRgba, mOuterCircle);
                 Log.d(TAG, "mInnerCircle: " + mInnerCircle.getCirCoordinate() + " radius: " + mInnerCircle.getCirRadius());
 
