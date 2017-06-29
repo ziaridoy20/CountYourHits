@@ -20,39 +20,35 @@ public class CheckNetwork {
         ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null)
         {
-            NetworkInfo[] info = connectivity.getAllNetworkInfo();
-            if (info != null)
-                for (int i = 0; i < info.length; i++)
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED)
-                    {
-                        IsConnected=true;
-                    }
+            NetworkInfo info = connectivity.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (info != null && info.isConnected()){
+                IsConnected=true;
+            }
+            else {
+                IsConnected=false;
+            }
         }
-        if(!IsConnected)
-        {
-            /*NetworkAlertDialog alert = new NetworkAlertDialog();
-            alert.showDialog(_activity, MessageType.MT_NOT_CONNECTED);*/
-        }
+
         return IsConnected;
     }
 
-    public static String getNetStatus(Context context) {
+    public static String getWifiConnectionStatus(Context context) {
         String status = null;
         NetworkInfo info = (NetworkInfo) ((ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE))
-                .getActiveNetworkInfo();
+                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         if (info == null) {
-            status = "No Internet Connection";
+            status = "No WIFI Connection";
 
         }
         else
 
         {
             if (info.isConnected())
-                status = "Connected to Internet";
-            else
-                status = "Connecting to Internet";
+                status = "Connected to WIFI";
+            else if(info.isConnectedOrConnecting())
+                status = "Connecting to WIFI";
         }
         return status;
     }
