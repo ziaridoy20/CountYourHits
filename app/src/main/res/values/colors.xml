@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    //color for main theme
+
+    <color name="primary">#FFC107</color>
+    <color name="primary_dark">#FFA000</color>
+    <color name="primary_light">#FFECB3</color>
+    <color name="accent">#607D8B</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#212121</color>
+    <color name="divider">#BDBDBD</color>
+
+
     <color name="colorPrimary">#283655</color>
     <color name="colorPrimaryDark">#1e1f26</color>
     <color name="colorAccent">#4d648d</color>
@@ -24,30 +36,27 @@
 
 
 
-    <color name="divider_color">@color/main_color_500</color>
 
-    <color name="main_color_500">@color/material_purple_500</color>
-    <color name="main_color_50">@color/material_purple_50</color>
-    <color name="main_color_100">@color/material_purple_100</color>
-    <color name="main_color_200">@color/material_purple_200</color>
-    <color name="main_color_300">@color/material_purple_300</color>
-    <color name="main_color_400">@color/material_purple_400</color>
-    <color name="main_color_600">@color/material_purple_600</color>
-    <color name="main_color_700">@color/material_purple_700</color>
-    <color name="main_color_800">@color/material_purple_800</color>
-    <color name="main_color_900">@color/material_purple_900</color>
-    <color name="main_color_A100">@color/material_light_yellow_A100</color>
-    <color name="main_color_A200">@color/material_light_yellow_A200</color>
-    <color name="main_color_A400">@color/material_light_yellow_A400</color>
+    <!--<color name="main_color_500">@color/material_purple_500</color>-->
+    <!--<color name="main_color_50">@color/material_purple_50</color>-->
+    <!--<color name="main_color_100">@color/material_purple_100</color>-->
+    <!--<color name="main_color_200">@color/material_purple_200</color>-->
+    <!--<color name="main_color_300">@color/material_purple_300</color>-->
+    <!--<color name="main_color_400">@color/material_purple_400</color>-->
+    <!--<color name="main_color_600">@color/material_purple_600</color>-->
+    <!--<color name="main_color_700">@color/material_purple_700</color>-->
+    <!--<color name="main_color_800">@color/material_purple_800</color>-->
+    <!--<color name="main_color_900">@color/material_purple_900</color>-->
+    <!--<color name="main_color_A100">@color/material_light_yellow_A100</color>-->
+    <!--<color name="main_color_A200">@color/material_light_yellow_A200</color>-->
+    <!--<color name="main_color_A400">@color/material_light_yellow_A400</color>-->
 
     <color name="main_color_grey_500">@color/material_grey_500</color>
     <color name="main_color_grey_50">@color/material_grey_50</color>
     <color name="main_color_grey_100">@color/material_grey_100</color>
-    <color name="main_color_grey_200">@color/material_grey_200</color>
     <color name="main_color_grey_300">@color/material_grey_300</color>
     <color name="main_color_grey_400">@color/material_grey_400</color>
     <color name="main_color_grey_600">@color/material_grey_600</color>
-    <color name="main_color_grey_700">@color/material_grey_700</color>
     <color name="main_color_grey_800">@color/material_grey_800</color>
     <color name="main_color_grey_900">@color/material_grey_900</color>
     <color name="material_cyan_700">#0297a7</color>
@@ -56,16 +65,6 @@
     <color name="status_bar_color">#7EBCFC</color>
     <color name="layout_border_color">#f9f7f7</color>
 
-    //color for main theme
-
-    <color name="primary">#FFC107</color>
-    <color name="primary_dark">#FFA000</color>
-    <color name="primary_light">#FFECB3</color>
-    <color name="accent">#607D8B</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#757575</color>
-    <color name="icons">#212121</color>
-    <color name="divider">#BDBDBD</color>
 
 
 </resources>
