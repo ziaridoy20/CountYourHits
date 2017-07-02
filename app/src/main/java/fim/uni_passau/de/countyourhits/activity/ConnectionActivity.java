@@ -1,14 +1,25 @@
 package fim.uni_passau.de.countyourhits.activity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,11 +33,14 @@ import com.peak.salut.SalutDevice;
 import com.peak.salut.SalutServiceData;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
 
 import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.app.Helper;
-import fim.uni_passau.de.countyourhits.model.ResultResponse;
+import fim.uni_passau.de.countyourhits.model.Message;
 
 public class ConnectionActivity extends AppCompatActivity  implements SalutDataCallback, View.OnClickListener{
 
@@ -37,16 +51,21 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
     public Button hostingBtn;
     public Button discoverBtn;
     public Button sendMsgBtn;
+    public Button selectPlayer;
     public ImageView streamImg;
     public TextView msg;
     SalutDataCallback callback;
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connection);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
         hostingBtn = (Button) findViewById(R.id.hosting_button);
         discoverBtn = (Button) findViewById(R.id.discover_services);
-
+        selectPlayer = (Button) findViewById(R.id.btn_selectPlayer);
         sendMsgBtn = (Button) findViewById(R.id.btn_send_msg);
         msg=(TextView)findViewById(R.id.textView);
         streamImg=(ImageView)findViewById(R.id.iv_streamImage);
@@ -97,82 +116,182 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         }
     }
     protected void stopHost() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ConnectionActivity.this);
+        alertDialog.setMessage("Do you want to stop Host Service ?").setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        network.stopNetworkService(true);
+                        hostingBtn.setText("START SERVICE");
+                        discoverBtn.setAlpha(1f);
+                        discoverBtn.setClickable(true);
+                        hostingBtn.setBackgroundResource(android.R.drawable.btn_default);
+                        hostingBtn.setTextColor(Color.BLACK);
 
+//                        //if host is disconnected remove the state
+//                        network.stopServiceDiscovery(true);
+//                        discoverBtn.setText("DISCOVERY SERVICE");
+//                        hostingBtn.setAlpha(1f);
+//                        hostingBtn.setClickable(false);
+//                        progressBar.setVisibility(View.GONE);
+//                        hostingBtn.setBackgroundResource(android.R.drawable.btn_default);
+//                        discoverBtn.setTextColor(Color.BLACK);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialog.create();
+        alertDialog.setTitle("Stop Service");
+        alert.show();
     }
-    private void setupNetwork()
-    {
+    protected void stopDiscovery() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ConnectionActivity.this);
+        alertDialog.setMessage("Do you want to STOP DISCOVERY?").setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        network.stopServiceDiscovery(true);
+                        discoverBtn.setText("DISCOVERY SERVICE");
+                        hostingBtn.setAlpha(1f);
+                        hostingBtn.setClickable(true);
+                        progressBar.setVisibility(View.GONE);
+                        hostingBtn.setBackgroundResource(android.R.drawable.btn_default);
+                        discoverBtn.setTextColor(Color.BLACK);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialog.create();
+        alertDialog.setTitle("Stop Discovery");
+        alert.show();
+    }
+    private void setupNetwork()    {
         if(!network.isRunningAsHost)
         {
             network.startNetworkService(new SalutDeviceCallback() {
                 @Override
                 public void call(SalutDevice salutDevice) {
-                    Toast.makeText(getApplicationContext(), "Device: " + salutDevice.instanceName + " connected.", Toast.LENGTH_SHORT).show();
+
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(ConnectionActivity.this);
+                    alertDialog.setTitle("Host Device Connected")
+                            .setMessage("Device: "+ salutDevice.deviceName + " connected as client")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = alertDialog.create();
+                    alertDialog.setTitle("STOP Discovery");
+                    alert.show();
+                    hostingBtn.setBackgroundColor(Color.BLUE);
+                    hostingBtn.setTextColor(Color.WHITE);
+                    Log.e(TAG, "Device: " + salutDevice.instanceName);
+                    //Toast.makeText(getApplicationContext(), "Device: " + salutDevice.instanceName + " connected.", Toast.LENGTH_SHORT).show();
                 }
             });
 
-            hostingBtn.setText("Stop Service");
+            hostingBtn.setText("STOP SERVICE");
             discoverBtn.setAlpha(0.5f);
             discoverBtn.setClickable(false);
-        }
-        else
-        {
-            network.stopNetworkService(false);
-            hostingBtn.setText("Start Service");
-            discoverBtn.setAlpha(1f);
-            discoverBtn.setClickable(true);
+        } else {
+            stopHost();
+//            old code
+//            network.stopNetworkService(false);
+//            hostingBtn.setText("Start Service");
+//            discoverBtn.setAlpha(1f);
+//            discoverBtn.setClickable(true);
         }
     }
 
-    private void discoverServices()
-    {
-        if(!network.isRunningAsHost && !network.isDiscovering)
-        {
+    private void discoverServices() {
+        progressBar.setVisibility(View.VISIBLE);
+        if(!network.isRunningAsHost && !network.isDiscovering) {
             network.discoverNetworkServices(new SalutDeviceCallback() {
                 @Override
-                public void call(SalutDevice device) {
+                public void call(final SalutDevice device) {
                     network.registerWithHost(device, new SalutCallback() {
                         @Override
                         public void call() {
-                            Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(ConnectionActivity.this);
+                            alertDialog.setTitle("Client Device Connected")
+                                    .setMessage("Device: " + device.deviceName + " connected as host")
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                            AlertDialog alert = alertDialog.create();
+                            alertDialog.setTitle("STOP Discovery");
+                            alert.show();
+                            discoverBtn.setBackgroundColor(Color.BLUE);
+                            discoverBtn.setTextColor(Color.WHITE);
+                            //Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
                         }
                     }, new SalutCallback() {
                         @Override
                         public void call() {
-                            Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(ConnectionActivity.this);
+                            alertDialog.setTitle("Unsuccessful")
+                                    .setMessage("Sorry Unable to Connect, Try again")
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            progressBar.setVisibility(View.GONE);
+                                            dialog.cancel();
+                                        }
+                                    });
+                            AlertDialog alert = alertDialog.create();
+                            alertDialog.setTitle("STAR DISCOVERY");
+                            alert.show();
+                            discoverBtn.setBackgroundResource(android.R.drawable.btn_default);
+                            discoverBtn.setTextColor(Color.BLACK);
+                            //Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
             }, true);
 
-            discoverBtn.setText("Stop Discovery");
+            discoverBtn.setText("STOP DISCOVERY");
             hostingBtn.setAlpha(0.5f);
             hostingBtn.setClickable(false);
         }
-        else
-        {
-            network.stopServiceDiscovery(true);
-            discoverBtn.setText("Discover Services");
-            hostingBtn.setAlpha(1f);
-            hostingBtn.setClickable(false);
+        else {
+            stopDiscovery();
+//            old code
+//            network.stopServiceDiscovery(true);
+//            discoverBtn.setText("Discover Services");
+//            hostingBtn.setAlpha(1f);
+//            hostingBtn.setClickable(false);
         }
     }
 
     private void sendMsg(){
-        ResultResponse myResultResponse = new ResultResponse();
-        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DirtHit/";
+        Message myMessage = new Message();
+        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DartHit/";
         File[] imgFile = new File(filePath).listFiles();
         if(imgFile != null && imgFile.length != 0 && imgFile[0].exists()){
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile[0].getAbsolutePath());
-            myResultResponse.imgBlob=Helper.bitmapToString(myBitmap);
-            myResultResponse.description = "contains image string";
+            myMessage.imgBlob=Helper.bitmapToString(myBitmap);
+            myMessage.description = "contains image string";
         }
         else {
-            myResultResponse.description="file not exist!! please check file path & image name!!!";
+            myMessage.description="file not exist!! please check file path & image name!!!";
         }
 
 
 
-        network.sendToAllDevices(myResultResponse, new SalutCallback() {
+        network.sendToAllDevices(myMessage, new SalutCallback() {
             @Override
             public void call() {
                 Log.e(TAG, "Oh no! The data failed to send.");
@@ -180,7 +299,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         });
 
         /*
-        network.sendToHost(myResultResponse, new SalutCallback() {
+        network.sendToHost(myMessage, new SalutCallback() {
             @Override
             public void call() {
                 Log.e(TAG, "Oh no! The data failed to send.");
@@ -211,24 +330,72 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         }
 
     }
+    public void goToPlayerView(View vew) {
+        //first check connected to host or not then apply
+//        if(!network.isConnectedToAnotherDevice) {
+//            AlertDialog.Builder alertDialog = new AlertDialog.Builder(ConnectionActivity.this);
+//            alertDialog.setTitle("Please connected to host first")
+//                    .setMessage("Your device is not connected")
+//                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.cancel();
+//                        }
+//                    });
+//            AlertDialog alert = alertDialog.create();
+//            alert.show();
+//        } else {
+//            Intent selectPlayerActivity = new Intent(getApplicationContext(), PlayerActivity.class);
+//            startActivity(selectPlayerActivity);
+//        }
+
+        //just remove this part
+        Intent selectPlayerActivity = new Intent(getApplicationContext(), ResultActivity.class);
+        startActivity(selectPlayerActivity);
+    }
+    //    saving image to device
+    private void storeImage(Bitmap image) {
+        //save image
+        OutputStream output;
+        Date dateObj = new Date();
+        CharSequence currentDateTime = DateFormat.format("yyyy-MM-dd hh:mm:ss", dateObj.getTime());
+
+        File filepath = Environment.getExternalStorageDirectory();
+        File dir = new File(filepath.getAbsolutePath() + "/Save_Image_Example");
+        if(!dir.exists()) {
+            dir.mkdirs();
+        }
+        File file = new File(dir, currentDateTime + ".png");
+//        Toast.makeText(ConnectionActivity.this, "Image Saved to SD Card", Toast.LENGTH_SHORT).show();
+
+        try {
+            output = new FileOutputStream(file);
+            image.compress(Bitmap.CompressFormat.JPEG, 100, output);
+            output.flush();
+            output.close();
+
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onDataReceived(Object data) {
         Toast.makeText(getApplicationContext(),"received",Toast.LENGTH_SHORT).show();
         try
         {
-            ResultResponse newResultResponse = LoganSquare.parse(String.valueOf(data), ResultResponse.class);
-            if( newResultResponse.imgBlob != null && newResultResponse.imgBlob != ""){
-                Bitmap streamImgBitmap=Helper.stringToBitmap(newResultResponse.imgBlob);
+            Message newMessage = LoganSquare.parse(String.valueOf(data), Message.class);
+            if( newMessage.imgBlob != null && newMessage.imgBlob != ""){
+                Bitmap streamImgBitmap=Helper.stringToBitmap(newMessage.imgBlob);
                 streamImg.setImageBitmap(streamImgBitmap);
+                storeImage(streamImgBitmap);
             }
-            else
-            {
+            else {
 
             }
-            Log.d(TAG, newResultResponse.description);  //See you on the other side!
+            Log.d(TAG, newMessage.description);  //See you on the other side!
             //Do other stuff with data.
-            msg.setText(newResultResponse.description);
+            msg.setText(newMessage.description);
         }
         catch (IOException ex)
         {
