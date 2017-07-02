@@ -90,4 +90,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="string_start">START</string>
+    <string name="title_activity_list">ListActivity</string>
 </resources>

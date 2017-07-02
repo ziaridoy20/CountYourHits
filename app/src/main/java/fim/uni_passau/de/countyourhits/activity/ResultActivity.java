@@ -38,7 +38,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
         currentItemName = (TextView) findViewById(R.id.item_name);
         currentItemPrice = (TextView) findViewById(R.id.item_price);
-        rateItemButton = (ImageView) findViewById(R.id.item_btn_rate);
+        //rateItemButton = (ImageView) findViewById(R.id.item_btn_rate);
 
         //shop = Shop.get();
         data = getData();
@@ -54,9 +54,9 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
         onItemChanged(data.get(0));
 
-        findViewById(R.id.item_btn_rate).setOnClickListener(this);
-        findViewById(R.id.item_btn_buy).setOnClickListener(this);
-        findViewById(R.id.item_btn_comment).setOnClickListener(this);
+        //findViewById(R.id.item_btn_rate).setOnClickListener(this);
+        //findViewById(R.id.item_btn_buy).setOnClickListener(this);
+        //findViewById(R.id.item_btn_comment).setOnClickListener(this);
 
         findViewById(R.id.home).setOnClickListener(this);
         findViewById(R.id.btn_smooth_scroll).setOnClickListener(this);
@@ -66,11 +66,11 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.item_btn_rate:
+            /*case R.id.item_btn_rate:
                 ResultResponse current = data.get(itemPicker.getCurrentItem());
                 //shop.setRated(current.getId(), !shop.isRated(current.getId()));
                 changeRateButtonState(current);
-                break;
+                break;*/
             case R.id.home:
                 finish();
                 break;
