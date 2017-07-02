@@ -196,18 +196,19 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         if (mIsColorSelected) {
             DetectedCircle mOuterCircle;
             DetectedCircle mOuterWhiteCircle;
-            DetectedCircle mInnerCircle;
+            DetectedCircle mInnerCircle=new DetectedCircle();
             //mDetector.drawCalibLine(mRgba);
             //mOuterWhiteCircle = mDetector.processWhiteCircleHough(mRgba);
             //Imgproc.circle(mRgba, mOuterWhiteCircle.getCirCoordinate(), mOuterWhiteCircle.getCirRadius(), new Scalar(0, 0, 255), 2);
-            mOuterCircle = mDetector.processCircleHough(mRgba);
+//            mOuterCircle = mDetector.processCircleHough(mRgba);
+            mOuterCircle = mDetector.processCircleByColor(mRgba,new Scalar(0,255,255));
             Log.d(TAG, "onCameraFrame: mOuterCircle " + mOuterCircle.isCircle());
 
             if (mOuterCircle != null && mOuterCircle.isCircle()) {
                 //mInnerCircle= mDetector.processBlackCircle(mRgba);
                 //Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 2);
-                mInnerCircle = mDetector.processCircleTest(mRgba, mOuterCircle);
-                Log.d(TAG, "mInnerCircle: " + mInnerCircle.getCirCoordinate() + " radius: " + mInnerCircle.getCirRadius());
+                mInnerCircle = mDetector.processWhiteDartCircle(mRgba, mOuterCircle);
+                //Log.d(TAG, "mInnerCircle: " + mInnerCircle.getCirCoordinate() + " radius: " + mInnerCircle.getCirRadius());
 
                 if (mInnerCircle != null && mInnerCircle.isCircle()) {
 
@@ -219,7 +220,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
 
                     if (mCircleDistance <= mOuterCircle.getCirRadius()) {
 
-                        Imgproc.circle(mRgba, mInnerCircle.getCirCoordinate(), mInnerCircle.getCirRadius(), new Scalar(100, 100, 255), 3);
+                        Imgproc.circle(mRgba, mInnerCircle.getCirCoordinate(), mInnerCircle.getCirRadius(), new Scalar(100, 200, 255), 3);
                         Imgproc.line(mRgba, mOuterCircle.getCirCoordinate(), mInnerCircle.getCirCoordinate(), new Scalar(255, 255, 255), 3);
                         Imgproc.putText(mRgba, Helper.convertDouble2String(mCircleDistance), mInnerCircle.getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
                         //mDetector.saveTargetImage(mRgba);
