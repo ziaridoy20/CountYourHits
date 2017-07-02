@@ -9,12 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import com.peak.salut.Callbacks.SalutCallback;
-import com.peak.salut.Callbacks.SalutDeviceCallback;
+
 import com.peak.salut.Salut;
-import com.peak.salut.SalutDevice;
+
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -109,7 +107,7 @@ public class PlayerActivity extends AppCompatActivity {
         players.setScore("score data 1121");
         players.setScoreImage("Image");
         players.setDescription("data description");
-        players = dataSource.create(players);
+        players = dataSource.createPlayer(players);
         Log.i(LOGTAG, "data created with id" + players.getId());
 
         players = new Players();
@@ -117,7 +115,7 @@ public class PlayerActivity extends AppCompatActivity {
         players.setScore("Zia score 5454");
         players.setScoreImage("zia image");
         players.setDescription("Zia data description");
-        players = dataSource.create(players);
+        players = dataSource.createPlayer(players);
         Log.i(LOGTAG, "Data created with id" + players.getId());
     }
 
