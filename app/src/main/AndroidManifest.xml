@@ -39,21 +39,10 @@
         </activity>
         <activity android:name=".activity.DartWiFiDirectActivity" />
         <activity android:name=".activity.ResultActivity" />
-        <activity android:name=".activity.ConnectionActivity"
-            android:label="Connection"
-            android:parentActivityName=".activity.MainActivity"/>
+        <activity android:name=".activity.ConnectionActivity" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.PlayerActivity"
-            android:label="Player List"
-            android:parentActivityName=".activity.ConnectionActivity"/>
-        <activity android:name=".activity.PlayerScoreListActivity"
-            android:label="Score List"
-            android:parentActivityName=".activity.PlayerActivity"/>
-        <activity android:name=".activity.PlayerScoreActivity"
-            android:label="Player Score"
-            android:parentActivityName=".activity.PlayerScoreListActivity"></activity>
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

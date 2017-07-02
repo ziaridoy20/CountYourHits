@@ -31,7 +31,7 @@
         android:id="@+id/btn_send_msg" />
 
     <Button
-        android:text="START SERVICE"
+        android:text="HOST SERVICE"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/hosting_button" />
@@ -42,18 +42,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/discover_services" />
 
-    <Button
-        android:text="SELECT PLAYER"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_selectPlayer"
-        android:onClick="goToPlayerView"/>
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:progressDrawable="@drawable/circular_progress"
-        android:layout_gravity="center_horizontal"/>
+
+
 
 </LinearLayout>
