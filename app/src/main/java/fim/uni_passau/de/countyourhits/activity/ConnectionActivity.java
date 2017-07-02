@@ -342,7 +342,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
 //                            dialog.cancel();
 //                        }
 //                    });
-//            AlertDialog alert = alertDialog.createPlayer();
+//            AlertDialog alert = alertDialog.create();
 //            alert.show();
 //        } else {
 //            Intent selectPlayerActivity = new Intent(getApplicationContext(), PlayerActivity.class);
