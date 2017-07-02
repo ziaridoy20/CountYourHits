@@ -4,17 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:srcCompat="@drawable/ic_background"
-        android:scaleType="fitXY"
-        android:id="@+id/imageView" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:id="@+id/linearLayout">
         <!--<Button
             android:id="@+id/btn_connection"
             android:layout_width="wrap_content"
@@ -25,32 +20,39 @@
             android:textStyle="bold"
             android:textSize="@dimen/textsize"
             android:textAppearance="@style/TextViewAppearance"/>-->
-        <com.kyleduo.switchbutton.SwitchButton
-            android:id="@+id/sb_host_player"
-            style="@style/SwitchButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:kswThumbWidth="200dp"
-            app:kswThumbHeight="50dp"
-            app:kswTextOn="HOST"
-            app:kswTextOff="PLAYERS"
-            android:gravity="center_horizontal"
-            android:layout_gravity="center_horizontal"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
         <Button
             android:id="@+id/btn_start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_gravity="center"
             android:onClick="btnCameraClick"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:shadowRadius="10"
+            android:background="@drawable/normalbutton"
             android:text="@string/string_start"
-            android:textSize="@dimen/textsize"
-            android:layout_alignParentBottom="true"/>
+            android:textSize="@dimen/textsize"/>
     </LinearLayout>
 
-
-
-    <!--</LinearLayout>-->
+    <com.kyleduo.switchbutton.SwitchButton
+        android:id="@+id/sb_host_player"
+        style="@style/SwitchButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="17dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="20dp"
+        android:gravity="center"
+        app:kswBackColor="@color/primary_light"
+        app:kswTextOff="PLAYERS"
+        app:kswTextOn="HOST"
+        app:kswThumbHeight="50dp"
+        app:kswThumbWidth="150dp" />
 
 </RelativeLayout>

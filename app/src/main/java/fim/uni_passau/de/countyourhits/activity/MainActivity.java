@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(cameraIntent);
                 }
                 else{
-                    Intent connectionIntent = new Intent(getApplicationContext(), ResultActivity.class);
-                    startActivity(connectionIntent);
+                    Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
+                    startActivity(playerlistIntent);
                 }
             }
         });
