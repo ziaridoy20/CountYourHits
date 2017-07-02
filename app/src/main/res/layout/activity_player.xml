@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RadioGroup
+        android:id="@+id/radioGroupPlayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true">
+
+        <RadioButton
+            android:id="@+id/rbtnPlayerOne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:text="Player One" />
+        <RadioButton
+            android:id="@+id/rbtnPlayerTwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Player Two"
+            android:layout_below="@+id/rbtnPlayerOne"
+            android:layout_alignStart="@+id/rbtnPlayerOne" />
+        <RadioButton
+            android:id="@+id/rbtnPlayerThree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Player Three"
+            android:layout_below="@+id/rbtnPlayerTwo"
+            android:layout_alignStart="@+id/rbtnPlayerTwo" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnPlayerChoose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/string_start"
+        android:textSize="@dimen/textsize"
+        android:layout_alignParentBottom="true"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/radioGroupPlayer"
+        android:layout_marginTop="78dp"
+        android:layout_toStartOf="@+id/radioGroupPlayer"
+        android:text="TextView" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/radioGroupPlayer"
+        android:layout_marginStart="58dp"
+        android:layout_marginTop="60dp"
+        android:layout_toEndOf="@+id/textView2"
+        android:text="Button"
+        android:onClick="display"/>
+
+</RelativeLayout>
