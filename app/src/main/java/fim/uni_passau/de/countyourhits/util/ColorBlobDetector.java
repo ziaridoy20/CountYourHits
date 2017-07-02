@@ -29,7 +29,7 @@ import static org.opencv.imgproc.Imgproc.CV_HOUGH_GRADIENT;
 
 public class ColorBlobDetector {
     public static int OUTER_CIRCLE_MIN_RADIUS=40;
-    public static int INNER_CIRCLE_MIN_RADIUS=5;
+    public static int INNER_CIRCLE_MIN_RADIUS=2;
     // Lower and Upper bounds for range checking in HSV color space
     private Scalar mLowerBound = new Scalar(0);
     private Scalar mUpperBound = new Scalar(0);
@@ -120,7 +120,7 @@ public class ColorBlobDetector {
         }
     }
 
-    // Todo
+
 
     public DetectedCircle processCircleTest(Mat rgbaImage, DetectedCircle mOuterCircle){
 
@@ -172,8 +172,124 @@ public class ColorBlobDetector {
         return mDetectedInnerCircle;
     }
 
+    public DetectedCircle processWhiteDartCircle(Mat rgbaImage, DetectedCircle mOuterCircle){
+
+        DetectedCircle mDetectedInnerCircle= new DetectedCircle();
+        Imgproc.medianBlur(rgbaImage,rgbaImage,5);
+        // Convert input image to HSV
+        Mat grayImage= new Mat();
+        Imgproc.cvtColor(rgbaImage, grayImage, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.GaussianBlur(grayImage, grayImage, new Size(19,19), 2, 2);
+        Imgproc.adaptiveThreshold(grayImage, grayImage, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 31, 25);
+        Mat circles=new Mat();
+        saveTargetImage(grayImage);
+        Imgproc.HoughCircles(grayImage, circles, CV_HOUGH_GRADIENT, 1, grayImage.rows()/8, 100, 20, 0, 0);
+        Point pt=new Point();
+        int radius=0;
+        for (int x = 0; x < circles.cols(); x++) {
+            double vCircle[] = circles.get(0, x);
+            if (vCircle == null)
+                break;
+            pt = new Point(Math.round(vCircle[0]),
+                    Math.round(vCircle[1]));
+            radius = (int) Math.round(vCircle[2]);
+//            if(radius > 10) {
+//                Log.d("cv: center: ", pt + " &  radius " + radius);
+//
+//            }
+        }
+        if(radius > INNER_CIRCLE_MIN_RADIUS && radius < mOuterCircle.getCirRadius()) {
+            mDetectedInnerCircle.setCirCoordinate(pt);
+            mDetectedInnerCircle.setCirRadius(radius);
+            mDetectedInnerCircle.setCircle(true);
+            Log.d("cv:center_in: ", pt + " &  radius_in " + radius);
+            //Imgproc.circle(rgbaImage, pt, radius, new Scalar(0, 100, 255), 3);
+        }
+        return mDetectedInnerCircle;
+    }
+    private Scalar scaleColorRange(Scalar color, boolean IsMax, boolean IsForHigh){
+        Scalar result=color;
+        double[] colorVal=result.val;
+        int count=0;
+        if(colorVal != null && colorVal.length > 0) {
+            double minVal=colorVal[0];
+            for (int i = 0; i < colorVal.length; i++) {
+                if(colorVal[count] < minVal) {
+                    minVal = colorVal[count];
+                    count=i;
+                }
+            }
+            switch (count){
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
+            //result=new Scalar();
+        }
+
+        return  result;
+    }
+
+    public DetectedCircle processCircleByColor(Mat rgbaImage, Scalar hsvColor){
+
+        DetectedCircle mDetectedOuterCircle= new DetectedCircle();
+        Mat rgbBlurImg=new Mat();
+        Mat hsbImage= new Mat();
+        Mat blkImage=new Mat();
+        Mat lowerRange=new Mat();
+        Mat upperRange=new Mat();
+
+        Point pt=new Point();
+        int radius=0;
+        int detectedCircleCount=0;
+        double mCirCoX=0.0f;
+        double mCirCoY=0.0f;
+        int mCirRadius=0;
+
+        Imgproc.medianBlur(rgbaImage,rgbaImage,7);
+        Imgproc.cvtColor(rgbaImage, hsbImage, Imgproc.COLOR_RGB2HSV);
+
+        Core.inRange(hsbImage, new Scalar(0, 100, 100), new Scalar(10, 255, 255), lowerRange);
+        Core.inRange(hsbImage, new Scalar(160, 100, 100), new Scalar(179, 255, 255), upperRange);
+
+        Mat red_hue_image=new Mat();
+        Core.addWeighted(lowerRange, 1.0, upperRange, 1.0, 0.0, red_hue_image);
+
+        Imgproc.GaussianBlur(red_hue_image, red_hue_image, new Size(7,7), 2, 2);
+        Imgproc.adaptiveThreshold(red_hue_image, red_hue_image, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 31, 25);
+        Mat circles=new Mat();
+        Imgproc.HoughCircles(red_hue_image, circles, CV_HOUGH_GRADIENT, 1, red_hue_image.rows(), 100, 20, 60, 0);
 
 
+        for (int x = 0; x < circles.cols(); x++) {
+            double vCircle[] = circles.get(0, x);
+            if (vCircle == null)
+                break;
+            pt = new Point(Math.round(vCircle[0]),
+                    Math.round(vCircle[1]));
+            radius = (int) Math.round(vCircle[2]);
+            if(radius > OUTER_CIRCLE_MIN_RADIUS) {
+                mCirCoX+=vCircle[0];
+                mCirCoY += vCircle[1];
+                mCirRadius+=radius;
+                detectedCircleCount++;
+                Imgproc.circle(rgbaImage, pt, radius, new Scalar(0, 255, 255), 3);
+            }
+        }
+        if(detectedCircleCount > 0) {
+            mDetectedOuterCircle.setCirCoordinate(new Point((mCirCoX / detectedCircleCount), (mCirCoY / detectedCircleCount)));
+            mDetectedOuterCircle.setCirRadius(mCirRadius / detectedCircleCount);
+            mDetectedOuterCircle.setCircle(true);
+            Log.d("cv:center_out: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
+            Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+            Imgproc.circle(red_hue_image, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+        }
+        //saveTargetImage(red_hue_image);
+        return  mDetectedOuterCircle;
+    }
 
     public DetectedCircle processCircleHough(Mat rgbaImage) {
 
@@ -232,9 +348,10 @@ public class ColorBlobDetector {
 
         DetectedCircle mDetectedOuterCircle= new DetectedCircle();
         Mat blak_image= new Mat();
+        Imgproc.medianBlur(rgbaImage,rgbaImage,5);
         Imgproc.cvtColor(rgbaImage, blak_image, Imgproc.COLOR_RGB2GRAY);
 
-        Imgproc.GaussianBlur(blak_image, blak_image, new Size(7,7), 2, 2);
+        Imgproc.GaussianBlur(blak_image, blak_image, new Size(11,11), 5, 5);
         Mat circles=new Mat();
         Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows(), 100, 30,0,0);
 
