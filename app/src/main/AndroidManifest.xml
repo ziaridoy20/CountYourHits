@@ -40,9 +40,10 @@
         <activity android:name=".activity.DartWiFiDirectActivity" />
         <activity android:name=".activity.ResultActivity" />
         <activity android:name=".activity.ConnectionActivity" />
+        <activity android:name=".activity.PlayerlistActivity"/>
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings"/>
     </application>
 
 </manifest>

@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(cameraIntent);
                 }
                 else{
-                    Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
+                    Intent playerlistIntent = new Intent(getApplicationContext(), ResultActivity.class);
                     startActivity(playerlistIntent);
                 }
             }

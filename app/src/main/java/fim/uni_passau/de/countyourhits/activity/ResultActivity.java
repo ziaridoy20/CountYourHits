@@ -58,9 +58,9 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         //findViewById(R.id.item_btn_buy).setOnClickListener(this);
         //findViewById(R.id.item_btn_comment).setOnClickListener(this);
 
-        findViewById(R.id.home).setOnClickListener(this);
-        findViewById(R.id.btn_smooth_scroll).setOnClickListener(this);
-        findViewById(R.id.btn_transition_time).setOnClickListener(this);
+        //findViewById(R.id.home).setOnClickListener(this);
+        //findViewById(R.id.btn_smooth_scroll).setOnClickListener(this);
+        //findViewById(R.id.btn_transition_time).setOnClickListener(this);
     }
 
     @Override
@@ -74,12 +74,12 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
             case R.id.home:
                 finish();
                 break;
-            case R.id.btn_transition_time:
+           /* case R.id.btn_transition_time:
                 //DiscreteScrollViewOptions.configureTransitionTime(itemPicker);
                 break;
             case R.id.btn_smooth_scroll:
                 //DiscreteScrollViewOptions.smoothScrollToUserSelectedPosition(itemPicker, v);
-                break;
+                break;*/
             default:
                 showUnsupportedSnackBar();
                 break;

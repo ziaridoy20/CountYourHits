@@ -6,8 +6,14 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical">
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/item_row_players"
+        android:id="@+id/id_include"/>
     <!-- top layer starts -->
-    <LinearLayout
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -53,82 +59,140 @@
                 tools:text="$24.00 USD" />
         </LinearLayout>
 
-    </LinearLayout>
+    </LinearLayout>-->
 
-    <!-- middle layer starts -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="1"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp">
-        <com.yarolegovich.discretescrollview.DiscreteScrollView
-            android:id="@+id/item_picker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
-    </LinearLayout>
-
-    <!--last layer starts -->
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginLeft="5dp"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/id_include"
         android:layout_marginTop="5dp">
-        <ImageView
-            android:id="@+id/item_btn_comment"
-            style="@style/ClickableImageView"
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:elevation="3dp"
+            card_view:cardCornerRadius="5dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- middle layer starts -->
+                <LinearLayout
+                    android:id="@+id/linear_middle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_margin="10dp"
+                    android:layout_marginBottom="10dp">
+
+                    <com.yarolegovich.discretescrollview.DiscreteScrollView
+                        android:id="@+id/item_picker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <!--last layer starts -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_margin="5dp"
+                    android:weightSum="2"
+                    android:layout_below="@+id/linear_middle"
+                    android:layout_marginTop="5dp">
+
+                    <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
+                        android:id="@+id/item_name"
+                        app:typeface="robotoBold"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/accent"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/dim_text_size"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="1"/>
+                    <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
+                        android:id="@+id/item_price"
+                        app:typeface="robotoBold"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/accent"
+                        android:textStyle="bold"
+                        android:layout_weight="1"
+                        android:textSize="@dimen/dim_text_size"
+                        android:layout_gravity="center_vertical"/>
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+<!--    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        card_view:cardCornerRadius="4dp">
+
+        &lt;!&ndash; middle layer starts &ndash;&gt;
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:src="@drawable/ic_launcher" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                android:id="@+id/finalScore"
-                app:typeface="robotoBold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/colorAccent"
-                android:textStyle="bold"/>
-            <Button
-                android:id="@+id/btn_smooth_scroll"
-                style="android:borderlessButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TEST"
-                android:textAllCaps="true"
-                android:textColor="@color/colorAccent" />
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp">
 
-            <Button
-                android:id="@+id/btn_transition_time"
-                style="android:borderlessButtonStyle"
+            <com.yarolegovich.discretescrollview.DiscreteScrollView
+                android:id="@+id/item_picker"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TIME"
-                android:textAllCaps="true"
-                android:textColor="@color/colorAccent" />
-
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
+        &lt;!&ndash;last layer starts &ndash;&gt;
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="5dp"
+            android:weightSum="2">
 
-    </LinearLayout>
+            <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
+                android:id="@+id/item_name"
+                app:typeface="robotoBold"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent"
+                android:textStyle="bold"
+                android:textSize="@dimen/dim_text_size"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"/>
+            <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
+                android:id="@+id/item_price"
+                app:typeface="robotoBold"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:textSize="@dimen/dim_text_size"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
 
-
-
-
+    </android.support.v7.widget.CardView>-->
 
 
         <!--<ImageView

@@ -7,7 +7,6 @@ import android.widget.ListView;
 
 import fim.uni_passau.de.countyourhits.R;
 
-
 public class PlayerlistActivity extends AppCompatActivity {
     String[] PlayersList = {"Roji","Nahid","Zia","Subash"};
 
@@ -17,7 +16,7 @@ public class PlayerlistActivity extends AppCompatActivity {
         setContentView(R.layout.activity_playerlist);
 
         ArrayAdapter adapter = new ArrayAdapter<String>(this,
-                 R.layout.item_row_players,R.id.player_name, PlayersList);
+                R.layout.item_row_players,R.id.player_name, PlayersList);
 
         ListView listView = (ListView) findViewById(R.id.playerlist);
         listView.setAdapter(adapter);
