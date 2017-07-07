@@ -68,6 +68,20 @@
         <item name="spinBars">true</item>
         <item name="color">@android:color/white</item>
     </style>
+    <style name="ScoreTextStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">@dimen/dim_text_size</item>
+    </style>
 
 
 </resources>
+<!--
+
+
+    android:textColor="@color/accent"
+    android:textSize="@dimen/dim_text_size"
+    app:typeface="robotoBold"-->

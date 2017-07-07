@@ -6,21 +6,6 @@
     android:background="?android:attr/activatedBackgroundIndicator"
     android:padding="6dip">
 
-<!--    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_weight="1"
-        android:layout_height="fill_parent">
-        <TextView
-            android:id="@+id/player_name"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/dim_text_size"
-            android:layout_weight="1"
-            android:gravity="center_vertical" />
-
-    </LinearLayout>-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
