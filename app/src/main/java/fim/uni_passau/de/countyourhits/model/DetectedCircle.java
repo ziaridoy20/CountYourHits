@@ -9,22 +9,21 @@ import org.opencv.core.Point;
 public class DetectedCircle {
 
     private boolean isCircle = false;
-    private boolean isInnerCircle = false;
     private Point cirCoordinate;
     private int cirRadius;
-
     private String cirImgPath;
+
 
     public DetectedCircle(){
 
     }
 
-    public int getCirRadius() {
-        return cirRadius;
+    public boolean isCircle() {
+        return isCircle;
     }
 
-    public void setCirRadius(int cirRadius) {
-        this.cirRadius = cirRadius;
+    public void setCircle(boolean circle) {
+        isCircle = circle;
     }
 
     public Point getCirCoordinate() {
@@ -35,12 +34,12 @@ public class DetectedCircle {
         this.cirCoordinate = cirCoordinate;
     }
 
-    public boolean isCircle() {
-        return isCircle;
+    public int getCirRadius() {
+        return cirRadius;
     }
 
-    public void setCircle(boolean circle) {
-        isCircle = circle;
+    public void setCirRadius(int cirRadius) {
+        this.cirRadius = cirRadius;
     }
 
     public String getCirImgPath() {
