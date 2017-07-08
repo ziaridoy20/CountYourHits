@@ -8,10 +8,10 @@
     android:orientation="vertical">
 
     <include
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/id_include"
         layout="@layout/item_row_players"
-        android:id="@+id/id_include"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <!-- top layer starts -->
     <!--<LinearLayout
         android:layout_width="match_parent"
@@ -66,7 +66,6 @@
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/id_include"
         android:layout_marginTop="5dp">
 
         <android.support.v7.widget.CardView
@@ -78,19 +77,20 @@
             android:elevation="3dp"
             card_view:cardCornerRadius="5dp">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <!-- middle layer starts -->
                 <LinearLayout
                     android:id="@+id/linear_middle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1"
                     android:layout_margin="10dp"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <com.yarolegovich.discretescrollview.DiscreteScrollView
                         android:id="@+id/item_picker"
@@ -103,220 +103,40 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:layout_alignParentBottom="true"
                     android:layout_margin="5dp"
-                    android:weightSum="2"
-                    android:layout_below="@+id/linear_middle"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/layout_shadow">
 
                     <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
                         android:id="@+id/item_name"
-                        app:typeface="robotoBold"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/accent"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/dim_text_size"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_weight="1"/>
+                        style="@style/ScoreTextStyle"
+                        app:typeface="robotoBold" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorHeaderGrey" />
                     <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
                         android:id="@+id/item_price"
-                        app:typeface="robotoBold"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/accent"
-                        android:textStyle="bold"
-                        android:layout_weight="1"
-                        android:textSize="@dimen/dim_text_size"
-                        android:layout_gravity="center_vertical"/>
+                        style="@style/ScoreTextStyle"
+                        app:typeface="robotoBold" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorHeaderGrey"  />
+
+                    <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
+                        android:id="@+id/date_time"
+                        style="@style/ScoreTextStyle"
+                        android:text="3/7/2017"
+                        app:typeface="robotoLight" />
                 </LinearLayout>
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </android.support.v7.widget.CardView>
 
     </LinearLayout>
-<!--    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        card_view:cardCornerRadius="4dp">
-
-        &lt;!&ndash; middle layer starts &ndash;&gt;
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp">
-
-            <com.yarolegovich.discretescrollview.DiscreteScrollView
-                android:id="@+id/item_picker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        &lt;!&ndash;last layer starts &ndash;&gt;
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="5dp"
-            android:weightSum="2">
-
-            <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                android:id="@+id/item_name"
-                app:typeface="robotoBold"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/accent"
-                android:textStyle="bold"
-                android:textSize="@dimen/dim_text_size"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"/>
-            <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                android:id="@+id/item_price"
-                app:typeface="robotoBold"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/accent"
-                android:textStyle="bold"
-                android:layout_weight="1"
-                android:textSize="@dimen/dim_text_size"
-                android:layout_gravity="center_horizontal"/>
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>-->
-
-
-        <!--<ImageView
-            android:id="@+id/home"
-            style="@style/ClickableImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_margin="8dp"
-            android:padding="8dp"
-            android:src="@drawable/icon" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="10" />
-
-        <TextView
-            android:id="@+id/item_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:fontFamily="sans-serif-light"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Stoneware + Porcelain Plate" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="4dp" />
-
-        <TextView
-            android:id="@+id/item_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold"
-            tools:text="$24.00 USD" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="16dp" />
-
-        <com.yarolegovich.discretescrollview.DiscreteScrollView
-            android:id="@+id/item_picker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="24dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/item_btn_comment"
-                style="@style/ClickableImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:src="@drawable/ic_launcher" />
-
-            <Space
-                android:layout_width="16dp"
-                android:layout_height="wrap_content" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/item_btn_buy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_action_discover"
-                android:tint="@android:color/white"
-                app:rippleColor="@color/colorAccent"
-                app:useCompatPadding="true" />
-
-            <Space
-                android:layout_width="16dp"
-                android:layout_height="wrap_content" />
-
-            <ImageView
-                android:id="@+id/item_btn_rate"
-                style="@style/ClickableImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:src="@drawable/ic_action_on_off"
-                android:tint="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="20"
-            android:gravity="bottom"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_smooth_scroll"
-                style="?android:borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TEST"
-                android:textAllCaps="true"
-                android:textColor="@color/colorAccent" />
-
-            <Button
-                android:id="@+id/btn_transition_time"
-                style="?android:borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TIME"
-                android:textAllCaps="true"
-                android:textColor="@color/colorAccent" />
-
-        </LinearLayout>
--->
 
 </LinearLayout>

@@ -38,6 +38,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
         currentItemName = (TextView) findViewById(R.id.item_name);
         currentItemPrice = (TextView) findViewById(R.id.item_price);
+
         //rateItemButton = (ImageView) findViewById(R.id.item_btn_rate);
 
         //shop = Shop.get();
