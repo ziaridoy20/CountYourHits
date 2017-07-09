@@ -2,7 +2,6 @@ package fim.uni_passau.de.countyourhits.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -21,7 +19,6 @@ import android.widget.Toast;
 
 import com.peak.salut.Callbacks.SalutCallback;
 import com.peak.salut.Callbacks.SalutDataCallback;
-import com.peak.salut.Callbacks.SalutDeviceCallback;
 import com.peak.salut.Salut;
 import com.peak.salut.SalutDataReceiver;
 import com.peak.salut.SalutDevice;
@@ -31,24 +28,21 @@ import com.yarolegovich.discretescrollview.InfiniteScrollAdapter;
 import com.yarolegovich.discretescrollview.Orientation;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.adapter.ResultAdapter;
 import fim.uni_passau.de.countyourhits.database.ScoreDataSource;
 import fim.uni_passau.de.countyourhits.model.Players;
-import fim.uni_passau.de.countyourhits.model.ResultResponse;
-import fim.uni_passau.de.countyourhits.model.Score;
 import fim.uni_passau.de.countyourhits.model.Scores;
 
 public class ResultActivity extends AppCompatActivity implements DiscreteScrollView.OnItemChangedListener,
         View.OnClickListener, SalutDataCallback {
-    private List<ResultResponse> data;
+    private List<Scores> data;
 
-    private TextView currentItemName;
-    private TextView currentItemPrice;
+    private TextView raScorePoint;
+    private TextView raPlayerId;
+    private TextView raCenterPoint;
     private ImageView rateItemButton;
     private DiscreteScrollView itemPicker;
     private InfiniteScrollAdapter infiniteAdapter;
@@ -76,7 +70,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         setContentView(R.layout.activity_result);
 
         scoreDataSource = new ScoreDataSource(this);
-        scoreDataSource.open();
+
 
 //        List<Scores> scoresData = scoreDataSource.findAll();
 //        for (Scores scores : scoresData) {
@@ -95,27 +89,15 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 //        long requestId = playerPreference.getLong("request_id",0);
 //        Toast.makeText(getApplicationContext(), playerId + " " + requestId, Toast.LENGTH_LONG).show();
 
-        List<Scores> getPlayerDataById = scoreDataSource.findByPlayerId("fk_player_id == "+playerId, "score_id DESC");
 
-        for (Scores scores : getPlayerDataById) {
-
-            String log = "Id: " + scores.getScoreId() + " ,Player Id: " + scores.getScorePlayer_Id() +
-                            ", Score request no: " + scores.getScoreRequestNo() + ", score point: " + scores.getScorePoint() +
-                            ", co-ordinate X: " + scores.getScoreCo_ordinate_x() + ", coordinate Y: " + scores.getScoreCo_ordinate_y() +
-                            ", image path: " + scores.getScoreImagePath() + " , date time: " + scores.getScoreDateTime() +
-                            ", score note: " + scores.getScoreNote() +
-                            "request id: " + requestId;
-                    Log.d("Name: ", log);
-                    Toast.makeText(getApplicationContext(), log, Toast.LENGTH_LONG).show();
-
-        }
-        currentItemName = (TextView) findViewById(R.id.item_name);
-        currentItemPrice = (TextView) findViewById(R.id.item_price);
+        raScorePoint = (TextView) findViewById(R.id.item_score_point);
+        raPlayerId = (TextView) findViewById(R.id.item_player_id);
+        raCenterPoint= (TextView) findViewById(R.id.item_center_point);
         //rateItemButton = (ImageView) findViewById(R.id.item_btn_rate);
 
         //shop = Shop.get();
         initSalut();
-        data = getData();
+        data = getData(playerId,requestId);
         itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
         itemPicker.setOrientation(Orientation.HORIZONTAL);
         itemPicker.addOnItemChangedListener(this);
@@ -170,13 +152,14 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         }
     }
 
-    private void onItemChanged(ResultResponse item) {
-        currentItemName.setText(item.getDescription());
-        currentItemPrice.setText(item.getPlayerId());
+    private void onItemChanged(Scores item) {
+        raScorePoint.setText(item.getScorePoint());
+        raPlayerId.setText(String.valueOf(item.getScorePlayer_Id()));
+        raCenterPoint.setText(item.getScoreCo_ordinate_x()+ ","+item.getScoreCo_ordinate_y());
         //changeRateButtonState(item);
     }
 
-    private void changeRateButtonState(ResultResponse item) {
+    private void changeRateButtonState(Scores item) {
 
     }
 
@@ -191,23 +174,11 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     }
 
 
-    public List<ResultResponse> getData() {
-//        scores = scoreDataSource.findAll();
-//        final List<Scores> scoreData = (List<Scores>) scoreDataSource.findAll();
-//        String[] playerScore = new String[scoreData.size()];
-//        String[] xCo = new String[scoreData.size()];
-//        String[] yCo = new String[scoreData.size()];
-//        int index = 0;
-//            for (Scores value : scoreData) {
-//            playerScore[index] = (String) value.getScorePoint();
-//            xCo[index] = (String) value.getScoreCo_ordinate_x();
-//            yCo[index] = (String) value.getScoreCo_ordinate_y();
-//            index++;
-//        }
-        return Arrays.asList(
-                new ResultResponse("1", "Everyday Candle", "$12.00 USD"),
-                new ResultResponse("2", "Small Porcelain Bowl", "$50.00 USD"),
-                new ResultResponse("3", "Favourite Board", "$265.00 USD"));
+    public List<Scores> getData(long playerId, long requestId) {
+        scoreDataSource.open();
+       List<Scores> playerScores = scoreDataSource.findByPlayerId("fk_player_id == "+playerId, "score_id DESC");
+
+        return playerScores;
     }
 
     public void initSalut() {
@@ -253,7 +224,6 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                                         }
                                     });
                             AlertDialog alert = alertDialog.create();
-                            alertDialog.setTitle("STOP Discovery");
                             alert.show();
                             Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
                             image.setVisibility(View.VISIBLE);
@@ -307,7 +277,6 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                             });
 
                     AlertDialog alert = alertDialog.create();
-                    alertDialog.setTitle("STAR DISCOVERY");
                     alert.show();
                 }
 
@@ -321,30 +290,28 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
     protected void stopDiscovery() {
         network.stopServiceDiscovery(true);
-        Log.i(TAG, "stopiing disovery service");
-
     }
 
     //for back button on phone
-     @Override
-     public void onBackPressed() {
-        super.onBackPressed();
-        Toast.makeText(this, "Discover Service Stopped", Toast.LENGTH_SHORT).show();
-        stopDiscovery();
-
-     }
-      //for back navigation button in application
-      @Override
-     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Toast.makeText(this, "Discover Service Stopped", Toast.LENGTH_SHORT).show();
-                stopDiscovery();
-                finish();
-                return true;
-            }
-        return super.onOptionsItemSelected(item);
-      }
+//     @Override
+//     public void onBackPressed() {
+//        super.onBackPressed();
+//        Toast.makeText(this, "Discover Service Stopped", Toast.LENGTH_SHORT).show();
+//        stopDiscovery();
+//
+//     }
+//      //for back navigation button in application
+//      @Override
+//     public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                Toast.makeText(this, "Discover Service Stopped", Toast.LENGTH_SHORT).show();
+//                stopDiscovery();
+//                finish();
+//                return true;
+//            }
+//        return super.onOptionsItemSelected(item);
+//      }
 
     @Override
     public void onDataReceived(Object o) {

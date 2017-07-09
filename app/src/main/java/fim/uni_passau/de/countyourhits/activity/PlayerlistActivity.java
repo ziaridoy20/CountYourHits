@@ -3,6 +3,7 @@ package fim.uni_passau.de.countyourhits.activity;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,7 @@ public class PlayerlistActivity extends AppCompatActivity {
 
     //private static final String LOGTAG = "DartDB_ResultActivity";
     ScoreDataSource scoreDataSource;
+    private SharedPreferences playerPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,6 @@ public class PlayerlistActivity extends AppCompatActivity {
             Log.d("data created ", "dataplayer");
         }
 
-
         players = playersDataSource.findAll();
         final List<Players> playersData = (List<Players>) playersDataSource.findAll();
 
@@ -64,15 +65,15 @@ public class PlayerlistActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (checkNetworkConnection() == true) {
                     Players players = playersData.get(position);
-                    Snackbar.make(view, players.getPlayerName() + "\n" + players.getPlayerId() + " API: " + players.getPlayerNote(), Snackbar.LENGTH_LONG)
+                    Snackbar.make(view, players.getPlayerName() + "\n" + players.getPlayerId(), Snackbar.LENGTH_LONG)
                             .setAction("No action", null).show();
+                    long randRequest = (long) Math.floor(Math.random() * 9_000_000L) + 1_000_000L;
 
-                    long playerId = players.getPlayerId();
-                    long radnRequest = (long) Math.floor(Math.random() * 9_000_000L) + 1_000_000L;
+//                    storePlayerIdRequestID(players.getPlayerId(), randRequest);
 
                     Intent sendToResult = new Intent(getApplicationContext(), ResultActivity.class);
                     sendToResult.putExtra("playerId", players.getPlayerId());
-
+                    sendToResult.putExtra("requestId", randRequest);
                     startActivity(sendToResult);
                 } else {
                     Toast.makeText(getApplicationContext(), "Please check wifi connection.", Toast.LENGTH_SHORT).show();
@@ -109,7 +110,7 @@ public class PlayerlistActivity extends AppCompatActivity {
 
 
     public void openDiscoverService() {
-    //1. first check the wifi/network connection
+    //1. first check the wifi/network connection#
         // 2. open discover services
         //3. send connection request with playerid and request number(8digit random number
         long radnRequest = (long) Math.floor(Math.random() * 9_000_000L) + 1_000_000L;
@@ -130,8 +131,8 @@ public class PlayerlistActivity extends AppCompatActivity {
         score.setScorePlayer_Id(1501);
         score.setScoreRequestNo(45484);
         score.setScorePoint("score point of nahid 12");
-        score.setScoreCo_ordinate_x("co ordinate x");
-        score.setScoreCo_ordinate_y("co ordinate y");
+        score.setScoreCo_ordinate_x("65.56");
+        score.setScoreCo_ordinate_y("56.65");
         score.setScoreImagePath("image path");
         score.setScoreDateTime("date time");
         score.setScoreNote("score note");
@@ -142,8 +143,8 @@ public class PlayerlistActivity extends AppCompatActivity {
         score.setScorePlayer_Id(1501);
         score.setScoreRequestNo(45484);
         score.setScorePoint("score point nahid 13");
-        score.setScoreCo_ordinate_x("co ordinate x");
-        score.setScoreCo_ordinate_y("co ordinate y");
+        score.setScoreCo_ordinate_x("60.65");
+        score.setScoreCo_ordinate_y("65.60");
         score.setScoreImagePath("image path");
         score.setScoreDateTime("date time");
         score.setScoreNote("score note");
@@ -154,8 +155,8 @@ public class PlayerlistActivity extends AppCompatActivity {
         score.setScorePlayer_Id(1502);
         score.setScoreRequestNo(45484);
         score.setScorePoint("score point zia 10");
-        score.setScoreCo_ordinate_x("co ordinate x");
-        score.setScoreCo_ordinate_y("co ordinate y");
+        score.setScoreCo_ordinate_x("65.56");
+        score.setScoreCo_ordinate_y("65.56");
         score.setScoreImagePath("image path");
         score.setScoreDateTime("date time");
         score.setScoreNote("score note");
@@ -166,13 +167,22 @@ public class PlayerlistActivity extends AppCompatActivity {
         score.setScorePlayer_Id(1503);
         score.setScoreRequestNo(45484);
         score.setScorePoint("score point roji 12");
-        score.setScoreCo_ordinate_x("co ordinate x");
-        score.setScoreCo_ordinate_y("co ordinate y");
+        score.setScoreCo_ordinate_x("65.56");
+        score.setScoreCo_ordinate_y("65.56");
         score.setScoreImagePath("image path");
         score.setScoreDateTime("date time");
         score.setScoreNote("score note");
         score = scoreDataSource.create(score);
         Log.i(LOGTAG, "Score of  Roji is with id" + score.getScoreId());
+    }
+
+    public void storePlayerIdRequestID(long playerId, long requestId) {
+        playerPreference = getSharedPreferences("PREFS", 0);
+        SharedPreferences.Editor playerEditor = playerPreference.edit();
+        playerEditor.clear();
+
+        playerEditor.putLong("player_id", playerId);
+        playerEditor.putLong("request_id", requestId);
     }
 
 }
