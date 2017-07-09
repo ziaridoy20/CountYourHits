@@ -77,7 +77,6 @@
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:elevation="3dp"
-            android:visibility="gone"
             card_view:cardCornerRadius="5dp">
 
             <LinearLayout
