@@ -2,7 +2,6 @@ package fim.uni_passau.de.countyourhits.activity;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -12,6 +11,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.peak.salut.Callbacks.SalutCallback;
@@ -43,10 +43,16 @@ import fim.uni_passau.de.countyourhits.app.Helper;
 import fim.uni_passau.de.countyourhits.model.DetectedCircle;
 import fim.uni_passau.de.countyourhits.util.ColorBlobDetector;
 
-public class ColorBlobDetectionActivity extends Activity implements OnTouchListener, CvCameraViewListener2,SalutDataCallback{
+public class ColorBlobDetectionActivity extends Activity implements OnTouchListener, CvCameraViewListener2 ,SalutDataCallback {
 
     //A Tag to filter the log messages
     private static final String TAG = "OCVSample::Activity";
+
+    private static final int SBAR_THRESHOLD_BLOCK_SIZE_MAX=100;
+    private static final int SBAR_THRESHOLD_BLOCK_SIZE_MIN=10;
+
+    private static final int SBAR_THRESHOLD_C_MAX=100;
+    private static final int SBAR_THRESHOLD_C_MIN=10;
 
     private boolean mIsColorSelected = false;
     private Mat mRgba;
@@ -61,6 +67,9 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     public SalutDataReceiver dataReceiver;
     public SalutServiceData serviceData;
     public Salut network;
+
+    private SeekBar mOutThrshldBlockSize, mOutThrshldC;
+    private SeekBar mInThrshldBlockSize, mInThrshldC;
 
     public static ArrayList<DetectedCircle> mInnerCircleList = new ArrayList<>();
     //A class used to implement the interaction between OpenCV and the device camera.
@@ -108,10 +117,76 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE); //Set the view as visible
         //Register your activity as the callback object to handle camera frames
         mOpenCvCameraView.setCvCameraViewListener(this);
+        initControl();
         initSalutService();
         setupNetwork();
     }
 
+    private void initControl(){
+
+        mOutThrshldBlockSize =(SeekBar) findViewById(R.id.sbar_block_size);
+        mOutThrshldC =(SeekBar) findViewById(R.id.sbar_thres_c);
+
+        mInThrshldBlockSize =(SeekBar) findViewById(R.id.sbar_inner_block_size);
+        mInThrshldC =(SeekBar) findViewById(R.id.sbar_inner_thres_c);
+
+        mOutThrshldBlockSize.setMax(SBAR_THRESHOLD_BLOCK_SIZE_MAX - SBAR_THRESHOLD_BLOCK_SIZE_MIN);
+        mOutThrshldBlockSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(progress <= mOutThrshldBlockSize.getProgress() && progress %2 !=0){
+                    mOutThrshldBlockSize.setProgress(progress);
+                }
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        mOutThrshldC.setMax(SBAR_THRESHOLD_C_MAX - SBAR_THRESHOLD_C_MIN);
+        mOutThrshldC.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(progress <= mOutThrshldC.getProgress()){
+                    mOutThrshldC.setProgress(progress);
+                }
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        mInThrshldBlockSize.setMax(SBAR_THRESHOLD_BLOCK_SIZE_MAX- SBAR_THRESHOLD_BLOCK_SIZE_MIN);
+        mInThrshldBlockSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(progress <= mInThrshldBlockSize.getProgress() && progress %2 !=0){
+                    mInThrshldBlockSize.setProgress(progress);
+                }
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        mInThrshldC.setMax(SBAR_THRESHOLD_C_MAX- SBAR_THRESHOLD_C_MIN);
+        mInThrshldC.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(progress <= mInThrshldC.getProgress()){
+                    mInThrshldC.setProgress(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
     @Override
     public void onPause() {
         super.onPause();
@@ -139,13 +214,9 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         super.onDestroy();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
-
         if(network != null) {
             if (network.isRunningAsHost) {
                 network.stopNetworkService(false);
-
-            } else if(network.isDiscovering) {
-                network.stopServiceDiscovery(false);
             }
         }
     }
@@ -224,56 +295,58 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         if (mIsColorSelected) {
             DetectedCircle mOuterCircle;
             DetectedCircle mOuterWhiteCircle;
-            DetectedCircle mInnerCircle=new DetectedCircle();
+            ArrayList<DetectedCircle> mInnerCircle;
             //mDetector.drawCalibLine(mRgba);
             //mOuterWhiteCircle = mDetector.processWhiteCircleHough(mRgba);
             //Imgproc.circle(mRgba, mOuterWhiteCircle.getCirCoordinate(), mOuterWhiteCircle.getCirRadius(), new Scalar(0, 0, 255), 2);
 //            mOuterCircle = mDetector.processCircleHough(mRgba);
-            mOuterCircle = mDetector.processCircleByColor(mRgba,new Scalar(0,255,255));
+            int thrsBlck= (mOutThrshldBlockSize.getProgress() % 2 == 0) ? mOutThrshldBlockSize.getProgress() + 1 : mOutThrshldBlockSize.getProgress();
+            thrsBlck += SBAR_THRESHOLD_BLOCK_SIZE_MIN;
+            int thrsC=SBAR_THRESHOLD_C_MIN + mOutThrshldC.getProgress();
+            Log.d(TAG, "onCameraFrame: threshold_block " + thrsBlck + ", thrs_C "+thrsC);
+            mOuterCircle = mDetector.processCircleByColor(mRgba,new Scalar(0,255,255),thrsBlck,thrsC);
             Log.d(TAG, "onCameraFrame: mOuterCircle " + mOuterCircle.isCircle());
 
             if (mOuterCircle != null && mOuterCircle.isCircle()) {
                 //mInnerCircle= mDetector.processBlackCircle(mRgba);
                 //Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 2);
-                mInnerCircle = mDetector.processWhiteDartCircle(mRgba, mOuterCircle);
+                thrsBlck= (mInThrshldBlockSize.getProgress() % 2 == 0) ? mInThrshldBlockSize.getProgress() + 1 : mInThrshldBlockSize.getProgress();
+                thrsBlck += SBAR_THRESHOLD_BLOCK_SIZE_MIN;
+                thrsC=SBAR_THRESHOLD_C_MIN + mInThrshldC.getProgress();
+                mInnerCircle = mDetector.processDartCircle(mRgba, mOuterCircle,thrsBlck,thrsC);
                 //Log.d(TAG, "mInnerCircle: " + mInnerCircle.getCirCoordinate() + " radius: " + mInnerCircle.getCirRadius());
 
-                if (mInnerCircle != null && mInnerCircle.isCircle()) {
+                if (mInnerCircle != null  ) {
+                    int numberInrCircle=0;
+                    while (numberInrCircle < mInnerCircle.size()){
 
-                    double mCircleDistance = Math.sqrt(Math.pow((mInnerCircle.getCirCoordinate().x - mOuterCircle.getCirCoordinate().x), 2) +
-                            Math.pow((mInnerCircle.getCirCoordinate().y - mOuterCircle.getCirCoordinate().y), 2));
+                        double mCircleDistance = Math.sqrt(Math.pow((mInnerCircle.get(numberInrCircle).getCirCoordinate().x - mOuterCircle.getCirCoordinate().x), 2) +
+                                Math.pow((mInnerCircle.get(numberInrCircle).getCirCoordinate().y - mOuterCircle.getCirCoordinate().y), 2));
 
 
-                    Log.d(TAG, "Distance between " + mCircleDistance);
+                        Log.d(TAG, "Distance between " + mCircleDistance);
 
-                    if (mCircleDistance <= mOuterCircle.getCirRadius()) {
+                        if (mCircleDistance <= mOuterCircle.getCirRadius()) {
 
-                        Imgproc.circle(mRgba, mInnerCircle.getCirCoordinate(), mInnerCircle.getCirRadius(), new Scalar(100, 200, 255), 3);
-                        Imgproc.line(mRgba, mOuterCircle.getCirCoordinate(), mInnerCircle.getCirCoordinate(), new Scalar(255, 255, 255), 3);
-                        Imgproc.putText(mRgba, Helper.convertDouble2String(mCircleDistance), mInnerCircle.getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
-                        //mDetector.saveTargetImage(mRgba);
-                        mInnerCircleList.add(mInnerCircle);
-                    } else {
+                            Imgproc.circle(mRgba, mInnerCircle.get(numberInrCircle).getCirCoordinate(), mInnerCircle.get(numberInrCircle).getCirRadius(), new Scalar(80, 200, 255), 3);
+                            Imgproc.line(mRgba, mOuterCircle.getCirCoordinate(), mInnerCircle.get(numberInrCircle).getCirCoordinate(), new Scalar(255, 255, 255), 3);
+                            Imgproc.putText(mRgba, Helper.convertDouble2String(mCircleDistance), mInnerCircle.get(numberInrCircle).getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
 
+                            mInnerCircleList.add(mInnerCircle.get(numberInrCircle));
+                        } else {
+
+                        }
+                        numberInrCircle++;
                     }
+
+
                 }
             }
         }
         return mRgba;
     }
-
-
-    private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
-        Mat pointMatRgba = new Mat();
-        Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
-        Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
-
-        return new Scalar(pointMatRgba.get(0, 0));
-    }
     private void initSalutService(){
         dataReceiver = new SalutDataReceiver(this, this);
-
-
         /*Populate the details for our awesome service. */
         serviceData = new SalutServiceData("wifiservice", 13334,"P2P");
 
@@ -298,7 +371,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
 
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(ColorBlobDetectionActivity.this);
                     alertDialog.setTitle("Host Device Connected")
-                            .setMessage("Device: "+ salutDevice.deviceName + " connected as client")
+                            .setMessage("Device: " + salutDevice.deviceName + " connected as client")
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -309,7 +382,17 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
                     alertDialog.setTitle("STOP Discovery");
                     alert.show();
                     Log.e(TAG, "Device: " + salutDevice.instanceName);
-                    Toast.makeText(getApplicationContext(), "Device: " + salutDevice.instanceName + " connected.", Toast.LENGTH_SHORT).show();
+
+                }
+            }, new SalutCallback() {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Device: connected.", Toast.LENGTH_SHORT).show();
+                }
+            }, new SalutCallback() {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Device: disconnected.", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -340,5 +423,13 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     @Override
     public void onDataReceived(Object o) {
 
+    }
+
+    private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
+        Mat pointMatRgba = new Mat();
+        Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
+        Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
+
+        return new Scalar(pointMatRgba.get(0, 0));
     }
 }
