@@ -16,9 +16,12 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.annotation.ColorInt;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -190,7 +193,25 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
             }
-            return super.onOptionsItemSelected(item);
+            switch (item.getItemId()){
+                case R.id.color_picker:
+
+                    return true;
+
+
+
+
+
+                case R.id.change_distance:
+                    //Toast.makeText(this, "You have selected Bookmark Menu", Toast.LENGTH_SHORT).show();
+                    return true;
+
+
+                default:
+                    return super.onOptionsItemSelected(item);
+
+            }
+
         }
     }
 

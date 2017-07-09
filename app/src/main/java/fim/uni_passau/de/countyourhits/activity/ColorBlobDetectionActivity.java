@@ -1,7 +1,10 @@
 package fim.uni_passau.de.countyourhits.activity;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -9,6 +12,15 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import com.peak.salut.Callbacks.SalutCallback;
+import com.peak.salut.Callbacks.SalutDataCallback;
+import com.peak.salut.Callbacks.SalutDeviceCallback;
+import com.peak.salut.Salut;
+import com.peak.salut.SalutDataReceiver;
+import com.peak.salut.SalutDevice;
+import com.peak.salut.SalutServiceData;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -31,7 +43,7 @@ import fim.uni_passau.de.countyourhits.app.Helper;
 import fim.uni_passau.de.countyourhits.model.DetectedCircle;
 import fim.uni_passau.de.countyourhits.util.ColorBlobDetector;
 
-public class ColorBlobDetectionActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
+public class ColorBlobDetectionActivity extends Activity implements OnTouchListener, CvCameraViewListener2,SalutDataCallback{
 
     //A Tag to filter the log messages
     private static final String TAG = "OCVSample::Activity";
@@ -44,6 +56,11 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     private Mat mSpectrum;
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
+
+    //slaute object
+    public SalutDataReceiver dataReceiver;
+    public SalutServiceData serviceData;
+    public Salut network;
 
     public static ArrayList<DetectedCircle> mInnerCircleList = new ArrayList<>();
     //A class used to implement the interaction between OpenCV and the device camera.
@@ -91,6 +108,8 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE); //Set the view as visible
         //Register your activity as the callback object to handle camera frames
         mOpenCvCameraView.setCvCameraViewListener(this);
+        initSalutService();
+        setupNetwork();
     }
 
     @Override
@@ -120,6 +139,15 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         super.onDestroy();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
+
+        if(network != null) {
+            if (network.isRunningAsHost) {
+                network.stopNetworkService(false);
+
+            } else if(network.isDiscovering) {
+                network.stopServiceDiscovery(false);
+            }
+        }
     }
 
     public void onCameraViewStarted(int width, int height) {
@@ -241,5 +269,76 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
 
         return new Scalar(pointMatRgba.get(0, 0));
+    }
+    private void initSalutService(){
+        dataReceiver = new SalutDataReceiver(this, this);
+
+
+        /*Populate the details for our awesome service. */
+        serviceData = new SalutServiceData("wifiservice", 13334,"P2P");
+
+        /*Create an instance of the Salut class, with all of the necessary data from before.
+        * We'll also provide a callback just in case a device doesn't support WiFi Direct, which
+        * Salut will tell us about before we start trying to use methods.*/
+        network = new Salut(dataReceiver, serviceData, new SalutCallback() {
+            @Override
+            public void call() {
+                // wiFiFailureDialog.show();
+                // OR
+                Log.e(TAG, "Sorry, but this device does not support WiFi Direct.");
+            }
+        });
+    }
+    private void setupNetwork()    {
+        if(!network.isRunningAsHost)
+        {
+            network.startNetworkService(new SalutDeviceCallback() {
+                @Override
+                public void call(SalutDevice salutDevice) {
+
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(ColorBlobDetectionActivity.this);
+                    alertDialog.setTitle("Host Device Connected")
+                            .setMessage("Device: "+ salutDevice.deviceName + " connected as client")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = alertDialog.create();
+                    alertDialog.setTitle("STOP Discovery");
+                    alert.show();
+                    Log.e(TAG, "Device: " + salutDevice.instanceName);
+                    Toast.makeText(getApplicationContext(), "Device: " + salutDevice.instanceName + " connected.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } else {
+            //stopHost();
+        }
+    }
+    protected void stopHost() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ColorBlobDetectionActivity.this);
+        alertDialog.setMessage("Do you want to stop Host Service ?").setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        network.stopNetworkService(true);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialog.create();
+        alertDialog.setTitle("Stop Service");
+        alert.show();
+    }
+
+    @Override
+    public void onDataReceived(Object o) {
+
     }
 }
