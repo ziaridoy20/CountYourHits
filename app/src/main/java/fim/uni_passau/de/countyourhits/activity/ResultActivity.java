@@ -174,6 +174,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     private void discoverServices() {
         progressBar.setVisibility(View.VISIBLE);
         image.setVisibility(View.GONE);
+
         if(!network.isRunningAsHost && !network.isDiscovering) {
             network.discoverNetworkServices(new SalutDeviceCallback() {
                 @Override
