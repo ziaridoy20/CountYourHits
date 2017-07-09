@@ -40,7 +40,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginStart="20dp"
         android:gravity="center"
-        app:kswBackColor="@color/primary_light"
+        app:kswBackColor="@color/primary"
         app:kswTextOff="PLAYERS"
         app:kswTextOn="HOST"
         app:kswThumbHeight="50dp"
