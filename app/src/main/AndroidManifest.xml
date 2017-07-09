@@ -38,11 +38,19 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.DartWiFiDirectActivity" />
-        <activity android:name=".activity.ResultActivity" />
-        <activity android:name=".activity.ConnectionActivity" />
+        <activity android:name=".activity.ResultActivity"
+            android:label="Score"
+            android:parentActivityName=".activity.PlayerlistActivity"/>
+        <activity android:name=".activity.ConnectionActivity"
+            android:label="Connection"
+            android:parentActivityName=".activity.MainActivity"/>
+        <activity android:name=".activity.PlayerlistActivity"
+            android:label="Players"
+            android:parentActivityName=".activity.MainActivity"/>
+
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings"/>
     </application>
 
 </manifest>

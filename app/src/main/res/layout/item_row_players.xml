@@ -28,12 +28,12 @@
         android:weightSum="4">
 
             <ImageView
-                android:id="@+id/user_image"
+                android:id="@+id/player_image"
                 android:layout_width="@dimen/user_img_width"
                 android:layout_height="@dimen/user_img_height"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:src="@drawable/ic_launcher" />
+                android:src="@drawable/ic_action_on_off" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
                     app:typeface="robotoLight" />
 
                 <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                    android:id="@+id/user_id"
+                    android:id="@+id/player_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
