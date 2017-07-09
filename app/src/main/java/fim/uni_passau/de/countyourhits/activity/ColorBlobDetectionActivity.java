@@ -85,7 +85,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
                 //camera interaction with the defined OpenCV camera view
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
-                    mOpenCvCameraView.enableView();
+                    //mOpenCvCameraView.enableView();
                     mOpenCvCameraView.setOnTouchListener(ColorBlobDetectionActivity.this);
                 }
                 break;
@@ -110,16 +110,20 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); // for Full Screen of Activity
-
         setContentView(R.layout.activity_color_blob_detection); // setting the layout file
+
+
+        initControl();
+        initSalutService();
+        setupNetwork();
+
+
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view); // id for OpenCV java camera view
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE); //Set the view as visible
         //Register your activity as the callback object to handle camera frames
         mOpenCvCameraView.setCvCameraViewListener(this);
-        initControl();
-        initSalutService();
-        setupNetwork();
+
     }
 
     private void initControl(){
@@ -316,7 +320,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
                 mInnerCircle = mDetector.processDartCircle(mRgba, mOuterCircle,thrsBlck,thrsC);
                 //Log.d(TAG, "mInnerCircle: " + mInnerCircle.getCirCoordinate() + " radius: " + mInnerCircle.getCirRadius());
 
-                if (mInnerCircle != null  ) {
+                if (mInnerCircle != null) {
                     int numberInrCircle=0;
                     while (numberInrCircle < mInnerCircle.size()){
 
@@ -387,12 +391,17 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
             }, new SalutCallback() {
                 @Override
                 public void call() {
-                    Toast.makeText(getApplicationContext(), "Device: connected.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Device: Hosting is sucessful.", Toast.LENGTH_SHORT).show();
+                    mOpenCvCameraView.enableView();
                 }
             }, new SalutCallback() {
                 @Override
                 public void call() {
-                    Toast.makeText(getApplicationContext(), "Device: disconnected.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Device: Hosting is unsucessful.", Toast.LENGTH_SHORT).show();
+                    showDialog();
+
+
+
                 }
             });
 
@@ -432,4 +441,23 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
 
         return new Scalar(pointMatRgba.get(0, 0));
     }
+
+
+
+    public void showDialog(){
+        AlertDialog alertDialog = new AlertDialog.Builder(ColorBlobDetectionActivity.this).create();
+        alertDialog.setTitle("Device is not hosted:");
+        alertDialog.setMessage("Check internet connection and reconnect");
+
+        // Alert dialog button
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Reconnect",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        setupNetwork();
+                        dialog.dismiss();// use dismiss to cancel alert dialog
+                    }
+                });
+        alertDialog.show();
+    }
+
 }
