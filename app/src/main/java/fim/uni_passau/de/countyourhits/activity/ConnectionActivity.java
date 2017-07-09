@@ -103,6 +103,8 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         getMenuInflater().inflate(R.menu.action_items, menu);
         return true;
     }
+
+
     @Override
     public void onDestroy() {
         super.onDestroy();
