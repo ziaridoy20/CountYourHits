@@ -1,6 +1,7 @@
 package fim.uni_passau.de.countyourhits.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.peak.salut.Callbacks.SalutCallback;
 import com.peak.salut.Callbacks.SalutDataCallback;
@@ -29,6 +31,7 @@ import com.yarolegovich.discretescrollview.Orientation;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
@@ -36,7 +39,7 @@ import fim.uni_passau.de.countyourhits.adapter.ResultAdapter;
 import fim.uni_passau.de.countyourhits.model.ResultResponse;
 
 public class ResultActivity extends AppCompatActivity implements DiscreteScrollView.OnItemChangedListener,
-        View.OnClickListener ,SalutDataCallback {
+        View.OnClickListener, SalutDataCallback {
     private List<ResultResponse> data;
 
     private TextView currentItemName;
@@ -62,13 +65,13 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         setContentView(R.layout.activity_result);
 
 
-
         currentItemName = (TextView) findViewById(R.id.item_name);
         currentItemPrice = (TextView) findViewById(R.id.item_price);
 
         //rateItemButton = (ImageView) findViewById(R.id.item_btn_rate);
 
         //shop = Shop.get();
+        initSalut();
         data = getData();
         itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
         itemPicker.setOrientation(Orientation.HORIZONTAL);
@@ -82,6 +85,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
         onItemChanged(data.get(0));
 
+
         //findViewById(R.id.item_btn_rate).setOnClickListener(this);
         //findViewById(R.id.item_btn_buy).setOnClickListener(this);
         //findViewById(R.id.item_btn_comment).setOnClickListener(this);
@@ -89,21 +93,17 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         //findViewById(R.id.home).setOnClickListener(this);
         //findViewById(R.id.btn_smooth_scroll).setOnClickListener(this);
         //findViewById(R.id.btn_transition_time).setOnClickListener(this);
-        initSalut();
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(network != null) {
-            if (network.isRunningAsHost) {
-                network.stopNetworkService(false);
-
-            } else if(network.isDiscovering) {
-                network.stopServiceDiscovery(false);
-            }
+        if (network != null) {
+            network.stopServiceDiscovery(true);
         }
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -155,13 +155,13 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                 new ResultResponse("3", "Favourite Board", "$265.00 USD"));
     }
 
-    public void initSalut(){
+    public void initSalut() {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
-        image =(CardView) findViewById(R.id.card_view);
+        image = (CardView) findViewById(R.id.card_view);
 
-        dataReceiver = new SalutDataReceiver(this,this);
-        serviceData = new SalutServiceData("wifiservice", 13334,"P2P");
+        dataReceiver = new SalutDataReceiver(this, this);
+        serviceData = new SalutServiceData("wifiservice", 13334, "P2P");
         network = new Salut(dataReceiver, serviceData, new SalutCallback() {
             @Override
             public void call() {
@@ -171,19 +171,24 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         discoverServices();
 
     }
+
     private void discoverServices() {
         progressBar.setVisibility(View.VISIBLE);
         image.setVisibility(View.GONE);
 
-        if(!network.isRunningAsHost && !network.isDiscovering) {
-            network.discoverNetworkServices(new SalutDeviceCallback() {
+        if (!network.isRunningAsHost && !network.isDiscovering) {
+            //
+            //comitted by roji
+            //
+            network.discoverWithTimeout(new SalutCallback() {
                 @Override
-                public void call(final SalutDevice device) {
+                public void call() {
+
+                    final SalutDevice device = network.foundDevices.get(0);
                     network.registerWithHost(device, new SalutCallback() {
                         @Override
                         public void call() {
                             progressBar.setVisibility(View.GONE);
-                            image.setVisibility(View.VISIBLE);
                             AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
                             alertDialog.setTitle("Client Device Connected")
                                     .setMessage("Device: " + device.deviceName + " connected as host")
@@ -196,19 +201,26 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                             AlertDialog alert = alertDialog.create();
                             alertDialog.setTitle("STOP Discovery");
                             alert.show();
+                            Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+                            image.setVisibility(View.VISIBLE);
                         }
                     }, new SalutCallback() {
                         @Override
                         public void call() {
                             AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
-                            alertDialog.setTitle("Unsuccessful")
-                                    .setMessage("Sorry Unable to Connect, Try again")
-                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            alertDialog.setTitle("Disconnected")
+                                    .setMessage("Network Disconnected, Try again?")
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            progressBar.setVisibility(View.GONE);
-                                            image.setVisibility(View.VISIBLE);
-                                            dialog.cancel();
+                                            initSalut();
+                                        }
+                                    })
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener(){
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
+                                            startActivity(playerlistIntent);
                                         }
                                     });
                             AlertDialog alert = alertDialog.create();
@@ -217,18 +229,41 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                         }
                     });
                 }
-            }, true);
 
-        }
-        else {
+            }, new SalutCallback() {
+                @Override
+                public void call() {
+
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
+                    alertDialog.setTitle("Unsuccessful")
+                            .setMessage("Sorry Unable to Connect, Try again?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    initSalut();
+
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
+                                    startActivity(playerlistIntent);
+                                }
+                            });
+
+                    AlertDialog alert = alertDialog.create();
+                    alertDialog.setTitle("STAR DISCOVERY");
+                    alert.show();
+                }
+
+            }, 10000);
+
+        } else {
             stopDiscovery();
-//            old code
-//            network.stopServiceDiscovery(true);
-//            discoverBtn.setText("Discover Services");
-//            hostingBtn.setAlpha(1f);
-//            hostingBtn.setClickable(false);
         }
     }
+
 
     protected void stopDiscovery() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
