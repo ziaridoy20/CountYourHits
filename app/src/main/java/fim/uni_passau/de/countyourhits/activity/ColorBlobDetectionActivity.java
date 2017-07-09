@@ -214,6 +214,11 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         super.onDestroy();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
+        if(network != null) {
+            if (network.isRunningAsHost) {
+                network.stopNetworkService(false);
+            }
+        }
     }
 
     public void onCameraViewStarted(int width, int height) {
@@ -366,7 +371,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
 
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(ColorBlobDetectionActivity.this);
                     alertDialog.setTitle("Host Device Connected")
-                            .setMessage("Device: "+ salutDevice.deviceName + " connected as client")
+                            .setMessage("Device: " + salutDevice.deviceName + " connected as client")
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -377,7 +382,17 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
                     alertDialog.setTitle("STOP Discovery");
                     alert.show();
                     Log.e(TAG, "Device: " + salutDevice.instanceName);
-                    Toast.makeText(getApplicationContext(), "Device: " + salutDevice.instanceName + " connected.", Toast.LENGTH_SHORT).show();
+
+                }
+            }, new SalutCallback() {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Device: connected.", Toast.LENGTH_SHORT).show();
+                }
+            }, new SalutCallback() {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Device: disconnected.", Toast.LENGTH_SHORT).show();
                 }
             });
 
