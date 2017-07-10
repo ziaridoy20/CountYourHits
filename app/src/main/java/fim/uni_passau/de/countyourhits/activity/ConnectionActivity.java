@@ -7,15 +7,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -41,6 +37,7 @@ import java.util.Date;
 import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.app.Helper;
 import fim.uni_passau.de.countyourhits.model.Message;
+import fim.uni_passau.de.countyourhits.model.ScoresMsg;
 
 public class ConnectionActivity extends AppCompatActivity  implements SalutDataCallback, View.OnClickListener{
 
@@ -61,7 +58,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connection);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.pbar_result);
         progressBar.setVisibility(View.GONE);
         hostingBtn = (Button) findViewById(R.id.hosting_button);
         discoverBtn = (Button) findViewById(R.id.discover_services);
@@ -73,7 +70,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         hostingBtn.setOnClickListener(this);
         discoverBtn.setOnClickListener(this);
         sendMsgBtn.setOnClickListener(this);
-
+        selectPlayer.setOnClickListener(this);
         /*Create a data receiver object that will bind the callback
         with some instantiated object from our app. */
         dataReceiver = new SalutDataReceiver(this, this);
@@ -279,16 +276,24 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
     }
 
     private void sendMsg(){
-        Message myMessage = new Message();
-        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DartHit/";
+        ScoresMsg myMessage = new ScoresMsg();
+        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DirtHit/";
         File[] imgFile = new File(filePath).listFiles();
         if(imgFile != null && imgFile.length != 0 && imgFile[0].exists()){
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile[0].getAbsolutePath());
             myMessage.imgBlob=Helper.bitmapToString(myBitmap);
-            myMessage.description = "contains image string";
+            myMessage.scoreCo_ordinate_x="64.0";
+            myMessage.scoreCo_ordinate_y="53.0";
+            myMessage.scoreDateTime="07/10/2017";
+            myMessage.scoreId="12";
+            myMessage.scoreImagePath="";
+            myMessage.scoreNote="test";
+            myMessage.scorePlayer_Id="1122";
+            myMessage.scorePoint="10";
+            myMessage.scoreRequestNo="12323";
+
         }
         else {
-            myMessage.description="file not exist!! please check file path & image name!!!";
         }
 
 
@@ -299,7 +304,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
                 Log.e(TAG, "Oh no! The data failed to send.");
             }
         });
-
+        Toast.makeText(getApplicationContext(),"Data Sent", Toast.LENGTH_SHORT).show();
         /*
         network.sendToHost(myMessage, new SalutCallback() {
             @Override
@@ -329,6 +334,12 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         else if(v.getId() == R.id.btn_send_msg)
         {
             sendMsg();
+        }
+
+        else if(v.getId() == R.id.btn_selectPlayer)
+        {
+            Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
+            startActivity(playerlistIntent);
         }
 
     }

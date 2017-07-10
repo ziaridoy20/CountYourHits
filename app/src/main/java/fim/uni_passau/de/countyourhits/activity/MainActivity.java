@@ -1,7 +1,6 @@
 package fim.uni_passau.de.countyourhits.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,9 +13,7 @@ import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.database.PlayersDataSource;
-import fim.uni_passau.de.countyourhits.database.ScoreDataSource;
 import fim.uni_passau.de.countyourhits.model.Players;
-import fim.uni_passau.de.countyourhits.model.Scores;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 //            String log = "Id: " + scores.getScoreId() + " ,Player Id: " + scores.getScorePlayer_Id() +
 //                    ", Score request no: " + scores.getScoreRequestNo() + ", score point: " + scores.getScorePoint() +
 //                    ", co-ordinate X: " + scores.getScoreCo_ordinate_x() + ", coordinate Y: " + scores.getScoreCo_ordinate_y() +
-//                    ", image path: " + scores.getScoreImagePath() + " , date time: " + scores.getScoreDateTime() +
+//                    ", image path: " + scores.getScoreImageBlob() + " , date time: " + scores.getScoreDateTime() +
 //                    ", score note: " + scores.getScoreNote();
 //            Log.d("Name: ", log);
 //        }
@@ -75,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(cameraIntent);
                 }
                 else{
-                    Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
+                    Intent playerlistIntent = new Intent(getApplicationContext(), ConnectionActivity.class);
                     startActivity(playerlistIntent);
                 }
             }
@@ -136,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 //        score.setScorePoint("score point");
 //        score.setScoreCo_ordinate_x("co ordinate x");
 //        score.setScoreCo_ordinate_y("co ordinate y");
-//        score.setScoreImagePath("image path");
+//        score.setScoreImageBlob("image path");
 //        score.setScoreDateTime("date time");
 //        score.setScoreNote("score note");
 //        score = scoreDataSource.create(score);

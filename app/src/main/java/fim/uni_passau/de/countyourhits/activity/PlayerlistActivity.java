@@ -1,24 +1,17 @@
 package fim.uni_passau.de.countyourhits.activity;
 
-import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.peak.salut.Salut;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
@@ -130,7 +123,7 @@ public class PlayerlistActivity extends AppCompatActivity {
         score.setScorePoint("score point of nahid 12");
         score.setScoreCo_ordinate_x("65.56");
         score.setScoreCo_ordinate_y("56.65");
-        score.setScoreImagePath("image path");
+        score.setScoreImageBlob("image path");
         score.setScoreDateTime("date time");
         score.setScoreNote("score note");
         score = scoreDataSource.create(score);
@@ -142,7 +135,7 @@ public class PlayerlistActivity extends AppCompatActivity {
         score.setScorePoint("score point nahid 13");
         score.setScoreCo_ordinate_x("60.65");
         score.setScoreCo_ordinate_y("65.60");
-        score.setScoreImagePath("image path");
+        score.setScoreImageBlob("image path");
         score.setScoreDateTime("date time");
         score.setScoreNote("score note");
         score = scoreDataSource.create(score);
@@ -154,7 +147,7 @@ public class PlayerlistActivity extends AppCompatActivity {
         score.setScorePoint("score point zia 10");
         score.setScoreCo_ordinate_x("65.56");
         score.setScoreCo_ordinate_y("65.56");
-        score.setScoreImagePath("image path");
+        score.setScoreImageBlob("image path");
         score.setScoreDateTime("date time");
         score.setScoreNote("score note");
         score = scoreDataSource.create(score);
@@ -166,7 +159,7 @@ public class PlayerlistActivity extends AppCompatActivity {
         score.setScorePoint("score point roji 12");
         score.setScoreCo_ordinate_x("65.56");
         score.setScoreCo_ordinate_y("65.56");
-        score.setScoreImagePath("image path");
+        score.setScoreImageBlob("image path");
         score.setScoreDateTime("date time");
         score.setScoreNote("score note");
         score = scoreDataSource.create(score);

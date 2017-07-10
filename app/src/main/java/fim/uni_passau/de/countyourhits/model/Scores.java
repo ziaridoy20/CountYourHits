@@ -11,7 +11,7 @@ public class Scores {
     private String scorePoint;
     private String scoreCo_ordinate_x;
     private String scoreCo_ordinate_y;
-    private String scoreImagePath;
+    private String scoreImageBlob;
     private String scoreDateTime;
     private String scoreNote;
 
@@ -63,12 +63,12 @@ public class Scores {
         this.scoreCo_ordinate_y = scoreCo_ordinate_y;
     }
 
-    public String getScoreImagePath() {
-        return scoreImagePath;
+    public String getScoreImageBlob() {
+        return scoreImageBlob;
     }
 
-    public void setScoreImagePath(String scoreImagePath) {
-        this.scoreImagePath = scoreImagePath;
+    public void setScoreImageBlob(String scoreImageBlob) {
+        this.scoreImageBlob = scoreImageBlob;
     }
 
     public String getScoreDateTime() {

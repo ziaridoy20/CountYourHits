@@ -3,6 +3,7 @@ package fim.uni_passau.de.countyourhits.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -17,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.peak.salut.Callbacks.SalutCallback;
 import com.peak.salut.Callbacks.SalutDataCallback;
 import com.peak.salut.Salut;
@@ -28,17 +30,20 @@ import com.yarolegovich.discretescrollview.InfiniteScrollAdapter;
 import com.yarolegovich.discretescrollview.Orientation;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
+import java.io.IOException;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.adapter.ResultAdapter;
+import fim.uni_passau.de.countyourhits.app.Helper;
 import fim.uni_passau.de.countyourhits.database.ScoreDataSource;
 import fim.uni_passau.de.countyourhits.model.Players;
 import fim.uni_passau.de.countyourhits.model.Scores;
+import fim.uni_passau.de.countyourhits.model.ScoresMsg;
 
 public class ResultActivity extends AppCompatActivity implements DiscreteScrollView.OnItemChangedListener,
         View.OnClickListener, SalutDataCallback {
-    private List<Scores> data;
+    private List<Scores> resultList;
 
     private TextView raScorePoint;
     private TextView raPlayerId;
@@ -60,6 +65,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     CardView image;
     SharedPreferences playerPreference;
 
+    private long requestId,playerId;
 
 
     private static final String LOGTAG = "DartDB_ResultActivity";
@@ -77,13 +83,13 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 //            String log = "Id: " + scores.getScoreId() + " ,Player Id: " + scores.getScorePlayer_Id() +
 //                    ", Score request no: " + scores.getScoreRequestNo() + ", score point: " + scores.getScorePoint() +
 //                    ", co-ordinate X: " + scores.getScoreCo_ordinate_x() + ", coordinate Y: " + scores.getScoreCo_ordinate_y() +
-//                    ", image path: " + scores.getScoreImagePath() + " , date time: " + scores.getScoreDateTime() +
+//                    ", image path: " + scores.getScoreImageBlob() + " , date time: " + scores.getScoreDateTime() +
 //                    ", score note: " + scores.getScoreNote();
 //            Log.d("Name: ", log);
 //        }
         Bundle getPlayerDataByIntent = getIntent().getExtras();
-        long requestId = getPlayerDataByIntent.getLong("requestId");
-        long playerId = getPlayerDataByIntent.getLong("playerId");
+        requestId = getPlayerDataByIntent.getLong("requestId");
+        playerId = getPlayerDataByIntent.getLong("playerId");
 //        playerPreference = getSharedPreferences("PREFS", 0);
 //        long playerId = playerPreference.getLong("player_id", 0);
 //        long requestId = playerPreference.getLong("request_id",0);
@@ -97,18 +103,21 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
         //shop = Shop.get();
         initSalut();
-        data = getData(playerId,requestId);
+        if(resultList != null){
+            resultList.clear();
+        }
+        resultList = getData(playerId,requestId);
         itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
         itemPicker.setOrientation(Orientation.HORIZONTAL);
         itemPicker.addOnItemChangedListener(this);
-        infiniteAdapter = InfiniteScrollAdapter.wrap(new ResultAdapter(data));
+        infiniteAdapter = InfiniteScrollAdapter.wrap(new ResultAdapter(resultList));
         itemPicker.setAdapter(infiniteAdapter);
         itemPicker.setItemTransitionTimeMillis(1000);
         itemPicker.setItemTransformer(new ScaleTransformer.Builder()
                 .setMinScale(0.8f)
                 .build());
 
-        onItemChanged(data.get(0));
+        onItemChanged(resultList.get(0));
 
 
         //findViewById(R.id.item_btn_rate).setOnClickListener(this);
@@ -133,7 +142,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     public void onClick(View v) {
         switch (v.getId()) {
             /*case R.id.item_btn_rate:
-                ResultResponse current = data.get(itemPicker.getCurrentItem());
+                ResultResponse current = resultList.get(itemPicker.getCurrentItem());
                 //shop.setRated(current.getId(), !shop.isRated(current.getId()));
                 changeRateButtonState(current);
                 break;*/
@@ -166,7 +175,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     @Override
     public void onCurrentItemChanged(@Nullable RecyclerView.ViewHolder viewHolder, int position) {
         int positionInDataSet = infiniteAdapter.getRealPosition(position);
-        onItemChanged(data.get(positionInDataSet));
+        onItemChanged(resultList.get(positionInDataSet));
     }
 
     private void showUnsupportedSnackBar() {
@@ -182,7 +191,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     }
 
     public void initSalut() {
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.pbar_result);
         progressBar.setVisibility(View.GONE);
         image = (CardView) findViewById(R.id.card_view);
 
@@ -314,8 +323,42 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 //      }
 
     @Override
-    public void onDataReceived(Object o) {
+    public void onDataReceived(Object data) {
+        Toast.makeText(getApplicationContext(),"received",Toast.LENGTH_SHORT).show();
+        try
+        {
 
+            ScoresMsg newScore = LoganSquare.parse(String.valueOf(data), ScoresMsg.class);
+            if( newScore != null && newScore.imgBlob != ""){
+                Bitmap saveImg= Helper.stringToBitmap(newScore.imgBlob);
+                String filepath=Helper.storeImage(saveImg);
+                Scores nwScore= new Scores();
+                nwScore.setScorePlayer_Id(Long.valueOf(newScore.scorePlayer_Id));
+                nwScore.setScoreNote("test");
+                nwScore.setScoreImageBlob(filepath);
+                nwScore.setScoreId(Long.valueOf(newScore.scoreId));
+                nwScore.setScoreCo_ordinate_x(newScore.scoreCo_ordinate_x);
+                nwScore.setScoreCo_ordinate_y(newScore.scoreCo_ordinate_y);
+                nwScore.setScoreDateTime(newScore.scoreDateTime);
+                nwScore.setScorePoint(newScore.scorePoint);
+                nwScore.setScoreRequestNo(Long.valueOf(newScore.scoreRequestNo));
+
+                resultList.clear();
+
+                resultList.add(nwScore);
+                //notifyAll();
+                infiniteAdapter.notifyDataSetChanged();
+
+            }
+            else {
+
+            }
+
+        }
+        catch (IOException ex)
+        {
+            Log.e(TAG, "Failed to parse network resultList.");
+        }
     }
 
 

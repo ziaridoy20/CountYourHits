@@ -1,5 +1,6 @@
 package fim.uni_passau.de.countyourhits.adapter;
 
+
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,6 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
-import fim.uni_passau.de.countyourhits.model.ResultResponse;
 import fim.uni_passau.de.countyourhits.model.Scores;
 
 /**
@@ -34,13 +34,15 @@ public class ResultAdapter extends  RecyclerView.Adapter<ResultAdapter.ViewHolde
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        /*Glide.with(holder.itemView.getContext())
-                .load(Helper.stringToBitmap(data.get(position).getImgBlob()))
-                .into(holder.image);*/
-
+        //Bitmap imgBitmap=Helper.stringToBitmap(data.get(position).getScoreImageBlob());
+        String strPath=data.get(position).getScoreImageBlob();
         Glide.with(holder.itemView.getContext())
-                .load(R.drawable.ic_launcher)
+                .load(data.get(position).getScoreImageBlob())
                 .into(holder.image);
+
+/*        Glide.with(holder.itemView.getContext())
+                .load(R.drawable.ic_launcher)
+                .into(holder.image);*/
     }
 
     @Override
