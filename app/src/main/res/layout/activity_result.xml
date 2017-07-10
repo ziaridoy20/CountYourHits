@@ -112,7 +112,7 @@
                     android:background="@drawable/layout_shadow">
 
                     <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                        android:id="@+id/item_name"
+                        android:id="@+id/item_score_point"
                         style="@style/ScoreTextStyle"
                         app:typeface="robotoBold" />
                     <View
@@ -120,7 +120,7 @@
                         android:layout_height="1dp"
                         android:background="@color/colorHeaderGrey" />
                     <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                        android:id="@+id/item_price"
+                        android:id="@+id/item_player_id"
                         style="@style/ScoreTextStyle"
                         app:typeface="robotoBold" />
                     <View
@@ -129,7 +129,7 @@
                         android:background="@color/colorHeaderGrey"  />
 
                     <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                        android:id="@+id/date_time"
+                        android:id="@+id/item_center_point"
                         style="@style/ScoreTextStyle"
                         android:text="3/7/2017"
                         app:typeface="robotoLight" />
