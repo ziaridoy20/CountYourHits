@@ -35,7 +35,6 @@ public class PlayerlistActivity extends AppCompatActivity {
 
     //private static final String LOGTAG = "DartDB_ResultActivity";
     ScoreDataSource scoreDataSource;
-    private SharedPreferences playerPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +67,6 @@ public class PlayerlistActivity extends AppCompatActivity {
                     Snackbar.make(view, players.getPlayerName() + "\n" + players.getPlayerId(), Snackbar.LENGTH_LONG)
                             .setAction("No action", null).show();
                     long randRequest = (long) Math.floor(Math.random() * 9_000_000L) + 1_000_000L;
-
-//                    storePlayerIdRequestID(players.getPlayerId(), randRequest);
 
                     Intent sendToResult = new Intent(getApplicationContext(), ResultActivity.class);
                     sendToResult.putExtra("playerId", players.getPlayerId());
@@ -176,13 +173,5 @@ public class PlayerlistActivity extends AppCompatActivity {
         Log.i(LOGTAG, "Score of  Roji is with id" + score.getScoreId());
     }
 
-    public void storePlayerIdRequestID(long playerId, long requestId) {
-        playerPreference = getSharedPreferences("PREFS", 0);
-        SharedPreferences.Editor playerEditor = playerPreference.edit();
-        playerEditor.clear();
-
-        playerEditor.putLong("player_id", playerId);
-        playerEditor.putLong("request_id", requestId);
-    }
 
 }

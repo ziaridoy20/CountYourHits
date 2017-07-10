@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -63,11 +64,26 @@ public class ScoreDataSource {
     }
 
     public List<Scores> findAll() {
-        List<Scores> scores = new ArrayList<Scores>();
         Cursor cursor = database.query(DartOpenDBHelper.TABLE_SCORES, allColumns,
                 null, null, null, null, null);
         Log.i(LOGTAG, "Returned " +cursor.getCount() + "rows");
 
+        List<Scores> scores = cursorToList(cursor);
+        return  scores;
+    }
+
+    public List<Scores> findByPlayerId(String playerId, String orderBy) {
+        Cursor cursor = database.query(DartOpenDBHelper.TABLE_SCORES, allColumns,
+                String.valueOf(playerId), null, null, null, orderBy);
+        Log.i(LOGTAG, "Returned " +cursor.getCount() + "rows");
+
+        List<Scores> scores = cursorToList(cursor);
+        return  scores;
+    }
+
+    @NonNull
+    private List<Scores> cursorToList(Cursor cursor) {
+        List<Scores> scores = new ArrayList<Scores>();
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 Scores score = new Scores();
@@ -83,8 +99,11 @@ public class ScoreDataSource {
                 scores.add(score);
             }
         }
-        return  scores;
+        return scores;
     }
+
+
+
 
 //    public List<Scores> findByPlayerId(Long playerId, String orderBy) {
 //        //List<Scores> scores = new ArrayList<Scores>();

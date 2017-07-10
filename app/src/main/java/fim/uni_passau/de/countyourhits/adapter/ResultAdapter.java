@@ -12,15 +12,16 @@ import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.model.ResultResponse;
+import fim.uni_passau.de.countyourhits.model.Scores;
 
 /**
  * Created by Nahid 002345 on 6/21/2017.
  */
 
 public class ResultAdapter extends  RecyclerView.Adapter<ResultAdapter.ViewHolder>  {
-    private List<ResultResponse> data;
+    private List<Scores> data;
 
-    public ResultAdapter(List<ResultResponse> data) {
+    public ResultAdapter(List<Scores> data) {
         this.data = data;
     }
 

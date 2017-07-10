@@ -73,6 +73,9 @@ public class DartOpenDBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLAYERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORES);
         onCreate(db);
+
+        Log.i(LOGTAG, "Database has been upgraded from " + oldVersion + " to " + newVersion);
     }
 }
