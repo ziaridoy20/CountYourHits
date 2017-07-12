@@ -13,6 +13,8 @@ import java.util.List;
 
 import fim.uni_passau.de.countyourhits.model.Scores;
 
+import static fim.uni_passau.de.countyourhits.database.DartOpenDBHelper.COLUMN_SCORE_PLAYER_ID;
+
 /**
  * Created by subash on 02/07/2017.
  */
@@ -25,7 +27,7 @@ public class ScoreDataSource {
 
     private static final String[] allColumns = {
             DartOpenDBHelper.COLUMN_SCORE_ID,
-            DartOpenDBHelper.COLUMN_SCORE_PLAYER_ID,
+            COLUMN_SCORE_PLAYER_ID,
             DartOpenDBHelper.COLUMN_SCORE_REQUEST_NO,
             DartOpenDBHelper.COLUMN_SCORE_POINT,
             DartOpenDBHelper.COLUMN_SCORE_CO_ORDINATE_X,
@@ -50,12 +52,12 @@ public class ScoreDataSource {
 
     public Scores create(Scores score) {
         ContentValues values = new ContentValues();
-        values.put(DartOpenDBHelper.COLUMN_SCORE_PLAYER_ID, score.getScorePlayer_Id());
+        values.put(COLUMN_SCORE_PLAYER_ID, score.getScorePlayer_Id());
         values.put(DartOpenDBHelper.COLUMN_SCORE_REQUEST_NO, score.getScoreRequestNo());
         values.put(DartOpenDBHelper.COLUMN_SCORE_POINT, score.getScorePoint());
         values.put(DartOpenDBHelper.COLUMN_SCORE_CO_ORDINATE_X, score.getScoreCo_ordinate_x());
         values.put(DartOpenDBHelper.COLUMN_SCORE_CO_ORDINATE_Y, score.getScoreCo_ordinate_y());
-        values.put(DartOpenDBHelper.COLUMN_SCORE_IMAGE_PATH, score.getScoreImagePath());
+        values.put(DartOpenDBHelper.COLUMN_SCORE_IMAGE_PATH, score.getScoreImageBlob());
         values.put(DartOpenDBHelper.COLUMN_SCORE_DATE_TIME, score.getScoreDateTime());
         values.put(DartOpenDBHelper.COLUMN_SCORE_NOTE, score.getScoreNote());
         long insertId = database.insert(DartOpenDBHelper.TABLE_SCORES, null, values);
@@ -72,13 +74,25 @@ public class ScoreDataSource {
         return  scores;
     }
 
-    public List<Scores> findByPlayerId(String playerId, String orderBy) {
+    public List<Scores> findByPlayerId(String playerId, String orderBy, String limit) {
         Cursor cursor = database.query(DartOpenDBHelper.TABLE_SCORES, allColumns,
-                String.valueOf(playerId), null, null, null, orderBy);
+                String.valueOf(playerId), null, null, null, orderBy, limit);
         Log.i(LOGTAG, "Returned " +cursor.getCount() + "rows");
 
         List<Scores> scores = cursorToList(cursor);
         return  scores;
+    }
+
+    public boolean deleteScoreRow(long scoreId) {
+        int result = database.delete(DartOpenDBHelper.TABLE_SCORES, String.valueOf(scoreId), null);
+        return (result == 1);
+    }
+
+    public boolean deleteScoreByPlayerId(long playerId) {
+        String whereClause = COLUMN_SCORE_PLAYER_ID+" = ?";
+        String[] whereArgs = new String[] { String.valueOf(playerId) };
+        int result = database.delete(DartOpenDBHelper.TABLE_SCORES,whereClause, whereArgs);
+        return (result == 1);
     }
 
     @NonNull
@@ -88,12 +102,12 @@ public class ScoreDataSource {
             while (cursor.moveToNext()) {
                 Scores score = new Scores();
                 score.setScoreId(cursor.getLong(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_ID)));
-                score.setScorePlayer_Id(cursor.getLong(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_PLAYER_ID)));
+                score.setScorePlayer_Id(cursor.getLong(cursor.getColumnIndex(COLUMN_SCORE_PLAYER_ID)));
                 score.setScoreRequestNo(cursor.getLong(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_REQUEST_NO)));
                 score.setScorePoint(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_POINT)));
                 score.setScoreCo_ordinate_x(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_CO_ORDINATE_X)));
                 score.setScoreCo_ordinate_y(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_CO_ORDINATE_Y)));
-                score.setScoreImagePath(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_IMAGE_PATH)));
+                score.setScoreImageBlob(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_IMAGE_PATH)));
                 score.setScoreDateTime(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_DATE_TIME)));
                 score.setScoreNote(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_SCORE_NOTE)));
                 scores.add(score);
