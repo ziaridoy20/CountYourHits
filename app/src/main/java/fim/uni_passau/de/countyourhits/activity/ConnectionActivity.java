@@ -32,7 +32,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Random;
 
 import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.app.Helper;
@@ -53,6 +56,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
     public TextView msg;
     SalutDataCallback callback;
     ProgressBar progressBar;
+    public long playerId=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -275,45 +279,6 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         }
     }
 
-    private void sendMsg(){
-        ScoresMsg myMessage = new ScoresMsg();
-        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DirtHit/";
-        File[] imgFile = new File(filePath).listFiles();
-        if(imgFile != null && imgFile.length != 0 && imgFile[0].exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile[0].getAbsolutePath());
-            myMessage.imgBlob=Helper.bitmapToString(myBitmap);
-            myMessage.scoreCo_ordinate_x="64.0";
-            myMessage.scoreCo_ordinate_y="53.0";
-            myMessage.scoreDateTime="07/10/2017";
-            myMessage.scoreId="12";
-            myMessage.scoreImagePath="";
-            myMessage.scoreNote="test";
-            myMessage.scorePlayer_Id="1122";
-            myMessage.scorePoint="10";
-            myMessage.scoreRequestNo="12323";
-
-        }
-        else {
-        }
-
-
-
-        network.sendToAllDevices(myMessage, new SalutCallback() {
-            @Override
-            public void call() {
-                Log.e(TAG, "Oh no! The data failed to send.");
-            }
-        });
-        Toast.makeText(getApplicationContext(),"Data Sent", Toast.LENGTH_SHORT).show();
-        /*
-        network.sendToHost(myMessage, new SalutCallback() {
-            @Override
-            public void call() {
-                Log.e(TAG, "Oh no! The data failed to send.");
-            }
-        });*/
-    }
-
     @Override
     public void onClick(View v) {
 
@@ -343,6 +308,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
         }
 
     }
+
     public void goToPlayerView(View vew) {
         //first check connected to host or not then apply
 //        if(!network.isConnectedToAnotherDevice) {
@@ -391,7 +357,6 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
             e.printStackTrace();
         }
     }
-
     @Override
     public void onDataReceived(Object data) {
         Toast.makeText(getApplicationContext(),"received",Toast.LENGTH_SHORT).show();
@@ -406,13 +371,61 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
             else {
 
             }
-            Log.d(TAG, newMessage.description);  //See you on the other side!
+            //Log.d(TAG, newMessage.description);  //See you on the other side!
             //Do other stuff with data.
-            msg.setText(newMessage.description);
+            //msg.setText(newMessage.description);
+            Log.i(TAG, String.valueOf(newMessage.playerId));
+            msg.setText(String.valueOf(newMessage.playerId));
+            playerId=newMessage.playerId;
         }
         catch (IOException ex)
         {
             Log.e(TAG, "Failed to parse network data.");
         }
+    }
+
+    private void sendMsg(){
+        ScoresMsg myMessage = new ScoresMsg();
+        String filePath= Helper.getRootDirectoryPath()+ "/DCIM/DirtHit/";
+        File[] imgFile = new File(filePath).listFiles();
+        Random rndNumber= new Random();
+
+        if(imgFile != null && imgFile.length != 0 && imgFile[0].exists()){
+            int fileNumber= rndNumber.nextInt(imgFile.length) - 1;
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile[fileNumber].getAbsolutePath());
+            myMessage.imgBlob=Helper.bitmapToString(myBitmap);
+            myMessage.scoreCo_ordinate_x="64.0";
+            myMessage.scoreCo_ordinate_y="53.0";
+
+            //myMessage.scoreDateTime="07/10/2017";
+            myMessage.scoreDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).toString();
+            //myMessage.scoreId="12";
+            myMessage.scoreImagePath="";
+            myMessage.scoreNote="test";
+            myMessage.scorePlayer_Id = String.valueOf(playerId);
+            myMessage.scorePoint=String.valueOf(rndNumber.nextInt());
+            myMessage.scoreRequestNo =String.valueOf(rndNumber.nextInt());
+        }
+        else {
+        }
+
+        Toast.makeText(getApplicationContext(),String.valueOf(playerId),Toast.LENGTH_SHORT).show();
+
+
+
+        network.sendToAllDevices(myMessage, new SalutCallback() {
+            @Override
+            public void call() {
+                Log.e(TAG, "Oh no! The data failed to send.");
+            }
+        });
+        Toast.makeText(getApplicationContext(),"Data Sent", Toast.LENGTH_SHORT).show();
+        /*
+        network.sendToHost(myMessage, new SalutCallback() {
+            @Override
+            public void call() {
+                Log.e(TAG, "Oh no! The data failed to send.");
+            }
+        });*/
     }
 }
