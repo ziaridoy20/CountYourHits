@@ -63,7 +63,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
 
-    //slaute object
+    //salut object
     public SalutDataReceiver dataReceiver;
     public SalutServiceData serviceData;
     public Salut network;

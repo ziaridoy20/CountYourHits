@@ -180,19 +180,20 @@ public class ColorBlobDetector {
         // Convert input image to HSV
         Mat grayImage= new Mat();
         Imgproc.cvtColor(rgbaImage, grayImage, Imgproc.COLOR_RGB2HSV);
-        Core.inRange(grayImage, new Scalar(0, 0, 0), new Scalar(180, 255, 30), grayImage);
-        Imgproc.GaussianBlur(grayImage, grayImage, new Size(19,19), 2, 2);
+        //Core.inRange(grayImage, new Scalar(0, 0, 0), new Scalar(180, 255, 30), grayImage);
+        Core.inRange(grayImage, new Scalar(0, 0, 0), new Scalar(255, 255, 30), grayImage);
+        Imgproc.GaussianBlur(grayImage, grayImage, new Size(9,9), 2, 2);
         Imgproc.adaptiveThreshold(grayImage, grayImage, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, thrshldBlockSize, thrshldC);
         Mat circles=new Mat();
-        Imgproc.HoughCircles(grayImage, circles, CV_HOUGH_GRADIENT, 1, grayImage.rows()/4, 100, 20, 0, 20);
+        Imgproc.HoughCircles(grayImage, circles, Imgproc.CV_HOUGH_GRADIENT, 1, grayImage.rows()/4, 100, 20, 0, 20);
         Point pt=new Point();
+
         int radius=0;
         for (int x = 0; x < circles.cols(); x++) {
             double vCircle[] = circles.get(0, x);
             if (vCircle == null)
                 break;
-            pt = new Point(Math.round(vCircle[0]),
-                    Math.round(vCircle[1]));
+            pt = new Point(Math.round(vCircle[0]),  Math.round(vCircle[1]));
             radius = (int) Math.round(vCircle[2]);
             DetectedCircle mDetectedInnerCircle;
             if(radius >= INNER_CIRCLE_MIN_RADIUS && radius < INNER_CIRCLE_MAX_RADIUS && radius < mOuterCircle.getCirRadius()) {
