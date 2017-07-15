@@ -411,9 +411,7 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
 
         Toast.makeText(getApplicationContext(),String.valueOf(playerId),Toast.LENGTH_SHORT).show();
 
-
-
-        network.sendToAllDevices(myMessage, new SalutCallback() {
+        network.sendToAllDevices(myMessage,  new SalutCallback() {
             @Override
             public void call() {
                 Log.e(TAG, "Oh no! The data failed to send.");
