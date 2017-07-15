@@ -27,5 +27,20 @@ public class Message{
      * @JsonField, LoganSquare will ignore it when parsing
      * and serializing this class.
      */
+    @JsonField
+    public String scorePoint;
+
+    @JsonField
+    public long playerId;
+
+    @JsonField
+    public long requestId;
+
+    @JsonField
+    public Double coOrdinateX;
+
+    @JsonField
+    public Double coOrdinateY;
+
     public int nonJsonField;
 }

@@ -40,6 +40,16 @@ public class PlayerlistActivity extends AppCompatActivity {
         scoreDataSource = new ScoreDataSource(this);
         scoreDataSource.open();
         List<Scores> scoresData = scoreDataSource.findAll();
+
+        for (Scores scores : scoresData) {
+            String log = "Id: " + scores.getScoreId() + " ,Player Id: " + scores.getScorePlayer_Id() +
+                    ", Score request no: " + scores.getScoreRequestNo() + ", score point: " + scores.getScorePoint() +
+                    ", co-ordinate X: " + scores.getScoreCo_ordinate_x() + ", coordinate Y: " + scores.getScoreCo_ordinate_y() +
+                    ", image path: " + scores.getScoreImageBlob() + " , date time: " + scores.getScoreDateTime() +
+                    ", score note: " + scores.getScoreNote();
+            Log.i("Name: ", log);
+        }
+
         if (scoresData.size() < 4) {
             createDataForScores();
             Log.d("data created ", "dataplayer");
@@ -114,8 +124,8 @@ public class PlayerlistActivity extends AppCompatActivity {
         } else {
             return true;
         }
-
     }
+
     public void createDataForScores() {
         Scores score = new Scores();
         score.setScorePlayer_Id(1501);

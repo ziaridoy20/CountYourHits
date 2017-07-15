@@ -1,9 +1,12 @@
 package fim.uni_passau.de.countyourhits.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -37,6 +40,7 @@ import fim.uni_passau.de.countyourhits.R;
 import fim.uni_passau.de.countyourhits.adapter.ResultAdapter;
 import fim.uni_passau.de.countyourhits.app.Helper;
 import fim.uni_passau.de.countyourhits.database.ScoreDataSource;
+import fim.uni_passau.de.countyourhits.model.Message;
 import fim.uni_passau.de.countyourhits.model.Players;
 import fim.uni_passau.de.countyourhits.model.Scores;
 import fim.uni_passau.de.countyourhits.model.ScoresMsg;
@@ -63,7 +67,6 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     SalutDataCallback callback;
     ProgressBar progressBar;
     CardView image;
-    SharedPreferences playerPreference;
 
     private long requestId,playerId;
 
@@ -77,48 +80,41 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
         scoreDataSource = new ScoreDataSource(this);
 
-
-//        List<Scores> scoresData = scoreDataSource.findAll();
-//        for (Scores scores : scoresData) {
-//            String log = "Id: " + scores.getScoreId() + " ,Player Id: " + scores.getScorePlayer_Id() +
-//                    ", Score request no: " + scores.getScoreRequestNo() + ", score point: " + scores.getScorePoint() +
-//                    ", co-ordinate X: " + scores.getScoreCo_ordinate_x() + ", coordinate Y: " + scores.getScoreCo_ordinate_y() +
-//                    ", image path: " + scores.getScoreImageBlob() + " , date time: " + scores.getScoreDateTime() +
-//                    ", score note: " + scores.getScoreNote();
-//            Log.d("Name: ", log);
-//        }
         Bundle getPlayerDataByIntent = getIntent().getExtras();
         requestId = getPlayerDataByIntent.getLong("requestId");
         playerId = getPlayerDataByIntent.getLong("playerId");
-//        playerPreference = getSharedPreferences("PREFS", 0);
-//        long playerId = playerPreference.getLong("player_id", 0);
-//        long requestId = playerPreference.getLong("request_id",0);
-//        Toast.makeText(getApplicationContext(), playerId + " " + requestId, Toast.LENGTH_LONG).show();
-
+        Log.i(TAG, requestId + " " +playerId);
 
         raScorePoint = (TextView) findViewById(R.id.item_score_point);
         raPlayerId = (TextView) findViewById(R.id.item_player_id);
-        raCenterPoint= (TextView) findViewById(R.id.item_center_point);
-        //rateItemButton = (ImageView) findViewById(R.id.item_btn_rate);
+        raCenterPoint = (TextView) findViewById(R.id.item_center_point);
 
-        //shop = Shop.get();
         initSalut();
-        if(resultList != null){
+        if (resultList != null) {
             resultList.clear();
         }
-        resultList = getData(playerId,requestId);
-        itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
-        itemPicker.setOrientation(Orientation.HORIZONTAL);
-        itemPicker.addOnItemChangedListener(this);
-        infiniteAdapter = InfiniteScrollAdapter.wrap(new ResultAdapter(resultList));
-        itemPicker.setAdapter(infiniteAdapter);
-        itemPicker.setItemTransitionTimeMillis(1000);
-        itemPicker.setItemTransformer(new ScaleTransformer.Builder()
-                .setMinScale(0.8f)
-                .build());
+                resultList = getData(playerId, requestId);
+        if (resultList.size() != 0) {
+            itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
+            itemPicker.setOrientation(Orientation.HORIZONTAL);
+            itemPicker.addOnItemChangedListener(this);
+            infiniteAdapter = InfiniteScrollAdapter.wrap(new ResultAdapter(resultList));
+            //if (infiniteAdapter != null) {
+            itemPicker.setAdapter(infiniteAdapter);
+            itemPicker.setItemTransitionTimeMillis(1000);
+            itemPicker.setItemTransformer(new ScaleTransformer.Builder()
+                    .setMinScale(0.8f)
+                    .build());
 
-        onItemChanged(resultList.get(0));
+            onItemChanged(resultList.get(0));
+            Log.i(TAG, "player has data");
+            // }
 
+        } else {
+            Log.i(TAG, "player has no data");
+        }
+        displayResult();
+    }
 
         //findViewById(R.id.item_btn_rate).setOnClickListener(this);
         //findViewById(R.id.item_btn_buy).setOnClickListener(this);
@@ -128,14 +124,36 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         //findViewById(R.id.btn_smooth_scroll).setOnClickListener(this);
         //findViewById(R.id.btn_transition_time).setOnClickListener(this);
 
+    public void displayResult() {
+        resultList = getData(playerId, requestId);
+        if (resultList.size() != 0) {
+            itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
+            itemPicker.setOrientation(Orientation.HORIZONTAL);
+            itemPicker.addOnItemChangedListener(this);
+            infiniteAdapter = InfiniteScrollAdapter.wrap(new ResultAdapter(resultList));
+            //if (infiniteAdapter != null) {
+            itemPicker.setAdapter(infiniteAdapter);
+            itemPicker.setItemTransitionTimeMillis(1000);
+            itemPicker.setItemTransformer(new ScaleTransformer.Builder()
+                    .setMinScale(0.8f)
+                    .build());
+
+            onItemChanged(resultList.get(0));
+            Log.i(TAG, "player has data");
+            // }
+
+        } else {
+            Log.i(TAG, "player has no data");
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (network != null) {
-            network.stopServiceDiscovery(true);
-        }
+//        if (network != null) {
+//            network.stopServiceDiscovery(true);
+//        }
+        finish();
     }
 
     @Override
@@ -185,8 +203,17 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
     public List<Scores> getData(long playerId, long requestId) {
         scoreDataSource.open();
-       List<Scores> playerScores = scoreDataSource.findByPlayerId("fk_player_id == "+playerId, "score_id DESC");
-
+        List<Scores> playerScores = scoreDataSource.findByPlayerId("fk_player_id == "+playerId, "score_id DESC","5");
+        if(playerScores != null) {
+            for (Scores scores : playerScores) {
+                String log = "Id: " + scores.getScoreId() + " ,Player Id: " + scores.getScorePlayer_Id() +
+                        ", Score request no: " + scores.getScoreRequestNo() + ", score point: " + scores.getScorePoint() +
+                        ", co-ordinate X: " + scores.getScoreCo_ordinate_x() + ", coordinate Y: " + scores.getScoreCo_ordinate_y() +
+                        ", image path: " + scores.getScoreImageBlob() + " , date time: " + scores.getScoreDateTime() +
+                        ", score note: " + scores.getScoreNote();
+                Log.d("Name: ", log);
+            }
+        }
         return playerScores;
     }
 
@@ -194,7 +221,6 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         progressBar = (ProgressBar) findViewById(R.id.pbar_result);
         progressBar.setVisibility(View.GONE);
         image = (CardView) findViewById(R.id.card_view);
-
         dataReceiver = new SalutDataReceiver(this, this);
         serviceData = new SalutServiceData("wifiservice", 13334, "P2P");
         network = new Salut(dataReceiver, serviceData, new SalutCallback() {
@@ -203,6 +229,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                 Log.e(TAG, "Sorry, but this device does not support WiFi Direct.");
             }
         });
+
         discoverServices();
     }
 
@@ -211,59 +238,59 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         image.setVisibility(View.GONE);
 
         if (!network.isRunningAsHost && !network.isDiscovering) {
-            //
-            //comitted by roji
-            //
             network.discoverWithTimeout(new SalutCallback() {
                 @Override
                 public void call() {
-
                     final SalutDevice device = network.foundDevices.get(0);
-                    network.registerWithHost(device, new SalutCallback() {
-                        @Override
-                        public void call() {
-                            progressBar.setVisibility(View.GONE);
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
-                            alertDialog.setTitle("Client Device Connected")
-                                    .setMessage("Device: " + device.deviceName + " connected as host")
-                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.cancel();
-                                        }
-                                    });
-                            AlertDialog alert = alertDialog.create();
-                            alert.show();
-                            Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
-                            image.setVisibility(View.VISIBLE);
-                        }
-                    }, new SalutCallback() {
-                        @Override
-                        public void call() {
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
-                            alertDialog.setTitle("Disconnected")
-                                    .setMessage("Network Disconnected, Try again?")
-                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            initSalut();
-                                        }
-                                    })
-                                    .setNegativeButton("No", new DialogInterface.OnClickListener(){
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
-                                            startActivity(playerlistIntent);
+                        network.registerWithHost(device, new SalutCallback() {
+                            @Override
+                            public void call() {
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
+                                alertDialog.setTitle("Client Device Connected")
+                                        .setMessage("Device: " + device.deviceName + " connected as host")
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.cancel();
+                                            }
+                                        });
+                                AlertDialog alert = alertDialog.create();
+                                if (!isFinishing()) {
+                                    alert.show();
+                                }
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+                                image.setVisibility(View.VISIBLE);
+                                sendMsgToHost();
+                            }
 
-                                        }
-                                    });
-                            AlertDialog alert = alertDialog.create();
-                            alert.show();
-                        }
-                    });
-                }
+                        }, new SalutCallback() {
+                            @Override
+                            public void call() {
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
+                                alertDialog.setTitle("Disconnected").setMessage("Network Disconnected, Try again?")
+                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                initSalut();
+                                            }
+                                        })
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
+                                                startActivity(playerlistIntent);
 
-            }, new SalutCallback() {
+                                            }
+                                        });
+                                AlertDialog alert = alertDialog.create();
+                                if (!isFinishing()) {
+                                    alert.show();
+                                }
+                            }
+                        });
+                    }
+            },  new SalutCallback() {
                 @Override
                 public void call() {
 
@@ -274,10 +301,9 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     initSalut();
-
                                 }
                             })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener(){
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent playerlistIntent = new Intent(getApplicationContext(), PlayerlistActivity.class);
@@ -286,7 +312,10 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                             });
 
                     AlertDialog alert = alertDialog.create();
-                    alert.show();
+                    if (!isFinishing()) {
+                        alert.show();
+                    }
+
                 }
 
             }, 10000);
@@ -294,6 +323,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         } else {
             stopDiscovery();
         }
+
     }
 
 
@@ -301,52 +331,35 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         network.stopServiceDiscovery(true);
     }
 
-    //for back button on phone
-//     @Override
-//     public void onBackPressed() {
-//        super.onBackPressed();
-//        Toast.makeText(this, "Discover Service Stopped", Toast.LENGTH_SHORT).show();
-//        stopDiscovery();
-//
-//     }
-//      //for back navigation button in application
-//      @Override
-//     public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case android.R.id.home:
-//                Toast.makeText(this, "Discover Service Stopped", Toast.LENGTH_SHORT).show();
-//                stopDiscovery();
-//                finish();
-//                return true;
-//            }
-//        return super.onOptionsItemSelected(item);
-//      }
-
     @Override
     public void onDataReceived(Object data) {
         Toast.makeText(getApplicationContext(),"received",Toast.LENGTH_SHORT).show();
         try
         {
-
+// TODO: 12/07/2017 Retreive Player Name to display Name instead of  
             ScoresMsg newScore = LoganSquare.parse(String.valueOf(data), ScoresMsg.class);
+
             if( newScore != null && newScore.imgBlob != ""){
                 Bitmap saveImg= Helper.stringToBitmap(newScore.imgBlob);
                 String filepath=Helper.storeImage(saveImg);
+
                 Scores nwScore= new Scores();
                 nwScore.setScorePlayer_Id(Long.valueOf(newScore.scorePlayer_Id));
-                nwScore.setScoreNote("test");
-                nwScore.setScoreImageBlob(filepath);
-                nwScore.setScoreId(Long.valueOf(newScore.scoreId));
+                nwScore.setScoreRequestNo(Long.valueOf(newScore.scoreRequestNo));
+                nwScore.setScorePoint(newScore.scorePoint);
                 nwScore.setScoreCo_ordinate_x(newScore.scoreCo_ordinate_x);
                 nwScore.setScoreCo_ordinate_y(newScore.scoreCo_ordinate_y);
+                nwScore.setScoreImageBlob(filepath);
+                //nwScore.setScoreId(Long.valueOf(newScore.scoreId));
                 nwScore.setScoreDateTime(newScore.scoreDateTime);
-                nwScore.setScorePoint(newScore.scorePoint);
-                nwScore.setScoreRequestNo(Long.valueOf(newScore.scoreRequestNo));
+                nwScore.setScoreNote("test");
+
+                nwScore = scoreDataSource.create(nwScore);
 
                 resultList.clear();
-
                 resultList.add(nwScore);
                 //notifyAll();
+                displayResult();
                 infiniteAdapter.notifyDataSetChanged();
 
             }
@@ -361,5 +374,15 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         }
     }
 
-
+    private  void sendMsgToHost() {
+        Message myMessage = new Message();
+        myMessage.playerId = playerId;
+        myMessage.requestId = requestId;
+        network.sendToHost(myMessage, new SalutCallback() {
+            @Override
+            public void call() {
+                Log.e(TAG, "Unable to send request");
+            }
+        });
+    }
 }
