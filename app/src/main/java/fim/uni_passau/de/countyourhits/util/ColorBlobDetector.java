@@ -203,8 +203,9 @@ public class ColorBlobDetector {
 
                 mDetectedInnerCircleList.add(mDetectedInnerCircle);
 
-                Log.d("cv:center_in: ", pt + " &  radius_in " + radius);
+
             }
+            Log.d("cv:processDartCircle: ", pt + " &  radius_in " + radius);
         }
 
         return mDetectedInnerCircleList;
@@ -286,7 +287,7 @@ public class ColorBlobDetector {
             mDetectedOuterCircle.setCirRadius(mCirRadius / detectedCircleCount);
             mDetectedOuterCircle.setCircle(true);
             Log.d("cv:center_out: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
-            Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
+            //Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
             Imgproc.circle(red_hue_image, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
         }
         //saveTargetImage(red_hue_image);
