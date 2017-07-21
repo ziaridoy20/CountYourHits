@@ -48,6 +48,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/btn_selectPlayer"
         android:onClick="goToPlayerView"/>
+
     <ProgressBar
         android:id="@+id/pbar_result"
         style="?android:attr/progressBarStyle"

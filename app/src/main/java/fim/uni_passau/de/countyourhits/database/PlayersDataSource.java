@@ -124,4 +124,23 @@ public class PlayersDataSource {
         }
         return  players;
     }
+
+    public List<Players> findByPlayerId(String playerId) {
+        List<Players> players = new ArrayList<Players>();
+        Cursor cursor = database.query(DartOpenDBHelper.TABLE_PLAYERS, allColumns,
+                String.valueOf(playerId), null, null, null, null, null);
+        Log.i(LOGTAG, "Returned " +cursor.getCount() + "rows");
+
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                Players player = new Players();
+                player.setPlayerId(cursor.getLong(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_PLAYER_ID)));
+                player.setPlayerName(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_PLAYER_NAME)));
+                player.setPlayerImage(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_PLAYER_IMAGE)));
+                player.setPlayerNote(cursor.getString(cursor.getColumnIndex(DartOpenDBHelper.COLUMN_PLAYERS_NOTE)));
+                players.add(player);
+            }
+        }
+        return  players;
+    }
 }

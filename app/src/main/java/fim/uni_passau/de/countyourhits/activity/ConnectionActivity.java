@@ -95,7 +95,6 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
             }
         });
 
-
     }
 
     @Override
@@ -130,7 +129,6 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
                         discoverBtn.setClickable(true);
                         hostingBtn.setBackgroundResource(android.R.drawable.btn_default);
                         hostingBtn.setTextColor(Color.BLACK);
-
 //                        //if host is disconnected remove the state
 //                        network.stopServiceDiscovery(true);
 //                        discoverBtn.setText("DISCOVERY SERVICE");
@@ -185,7 +183,8 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
 
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(ConnectionActivity.this);
                     alertDialog.setTitle("Host Device Connected")
-                            .setMessage("Device: "+ salutDevice.deviceName + " connected as client")
+                            .setMessage("Device: " + "is registred: " + salutDevice.isRegistered + " service name"
+                                    + salutDevice.serviceName + " instance name" + salutDevice.instanceName + "connected as client")
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -199,6 +198,16 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
                     hostingBtn.setTextColor(Color.WHITE);
                     Log.e(TAG, "Device: " + salutDevice.instanceName);
                     //Toast.makeText(getApplicationContext(), "Device: " + salutDevice.instanceName + " connected.", Toast.LENGTH_SHORT).show();
+                }
+            }, new SalutCallback() {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Device: Hosting is sucessful.", Toast.LENGTH_SHORT).show();
+                }
+            }, new SalutCallback() {
+                @Override
+                public void call() {
+                    Toast.makeText(getApplicationContext(), "Device: Hosting is not sucessful.", Toast.LENGTH_SHORT).show();
                 }
             });
 

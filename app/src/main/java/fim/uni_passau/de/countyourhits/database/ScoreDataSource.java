@@ -85,9 +85,9 @@ public class ScoreDataSource {
         return  scores;
     }*/
 
-    public List<Scores> findByPlayerId(String playerId, String orderBy) {
+    public List<Scores> findByPlayerId(String playerId, String orderBy, String limit) {
         Cursor cursor = database.query(DartOpenDBHelper.TABLE_SCORES, allColumns,
-                String.valueOf(playerId), null, null, null, orderBy);
+                String.valueOf(playerId), null, null, null, orderBy,limit);
         Log.i(LOGTAG, "Returned " +cursor.getCount() + "rows");
 
         List<Scores> scores = cursorToList(cursor);

@@ -2,7 +2,9 @@ package fim.uni_passau.de.countyourhits.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -12,7 +14,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,11 +34,14 @@ import com.yarolegovich.discretescrollview.Orientation;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
+import fim.uni_passau.de.countyourhits.adapter.PlayerAdapter;
 import fim.uni_passau.de.countyourhits.adapter.ResultAdapter;
 import fim.uni_passau.de.countyourhits.app.Helper;
+import fim.uni_passau.de.countyourhits.database.PlayersDataSource;
 import fim.uni_passau.de.countyourhits.database.ScoreDataSource;
 import fim.uni_passau.de.countyourhits.model.Message;
 import fim.uni_passau.de.countyourhits.model.Players;
@@ -69,10 +76,16 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
     private static final String LOGTAG = "DartDB_ResultActivity";
     ScoreDataSource scoreDataSource;
+    PlayersDataSource playersDataSource;
+    private List<Players> players;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+        playersDataSource = new PlayersDataSource(this);
+        playersDataSource.open();
 
         scoreDataSource = new ScoreDataSource(this);
 
@@ -85,11 +98,11 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         raPlayerId = (TextView) findViewById(R.id.item_player_id);
         raCenterPoint = (TextView) findViewById(R.id.item_center_point);
         //initialize salut to connect to host network
-        //initSalut();
+        initSalut();
         if (resultList != null) {
             resultList.clear();
         }
-        resultList = getData(playerId, requestId);
+                resultList = getData(playerId, requestId);
         if (resultList.size() != 0) {
             deleteFunction(resultList);
             resultList = getData(playerId, requestId);
@@ -169,12 +182,22 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        if (network != null) {
-//            network.stopServiceDiscovery(true);
-//        }
+        if (network != null && network.isDiscovering) {
+            network.stopServiceDiscovery(true);
+        }
         finish();
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        // code here to show dialog
+        super.onBackPressed();  // optional depending on your needs
+        if (network != null && !network.isDiscovering) {
+            network.unregisterClient(false);
+        }
+        finish();
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -222,8 +245,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
     public List<Scores> getData(long playerId, long requestId) {
         scoreDataSource.open();
-        //List<Scores> playerScores = scoreDataSource.findByPlayerId("fk_player_id == "+playerId, "score_id DESC","5");
-        List<Scores> playerScores = scoreDataSource.findByPlayerId("fk_player_id == "+playerId, "score_id DESC");
+        List<Scores> playerScores = scoreDataSource.findByPlayerId("fk_player_id == "+playerId, "score_id DESC","5");
         if(playerScores != null) {
             for (Scores scores : playerScores) {
                 String log = "Id: " + scores.getScoreId() + " ,Player Id: " + scores.getScorePlayer_Id() +
