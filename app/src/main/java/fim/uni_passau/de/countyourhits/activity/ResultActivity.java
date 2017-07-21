@@ -129,6 +129,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         } else {
             Log.i(TAG, "player has no data");
         }
+        deleteFunction(resultList);
         displayResult();
     }
 
@@ -136,8 +137,8 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         int i = 4;
         scoreDataSource.open();
             while (i < scoreList.size()) {
+                Helper.deleteImageFile(scoreList.get(i).getScoreImageBlob());
                 scoreDataSource.deleteScoreRow(scoreList.get(i).getScoreId());
-                String filepath = Helper.retrieveFile().getAbsolutePath();
 
                 //for temp file path
             /*    if(filepath != null) {
@@ -145,7 +146,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                 }*/
 
                 //when we have real data comment the first one actiavate below line
-                Helper.deleteImageFile(scoreList.get(i).getScoreImageBlob());
+
                 Log.i(LOGTAG, String.valueOf(scoreList.get(i).getScoreId()));
                 i++;
             }
@@ -402,10 +403,10 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
                 nwScore = scoreDataSource.create(nwScore);
 
+                deleteFunction(resultList);
                 resultList.clear();
                 resultList.add(nwScore);
                 //notifyAll();
-                deleteFunction(resultList);
                 displayResult();
                 infiniteAdapter.notifyDataSetChanged();
                 Log.e(TAG, "List updated" + resultList.size());
