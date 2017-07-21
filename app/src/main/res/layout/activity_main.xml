@@ -3,7 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/darts_game"
     xmlns:tools="http://schemas.android.com/tools">
+    <!--<ImageSwitcher-->
+        <!--android:id="@+id/ImageSwitcher01"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/targetbackground">-->
+    <!--</ImageSwitcher>-->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,30 +29,37 @@
             android:onClick="btnCameraClick"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="20dp"
             android:shadowRadius="10"
             android:background="@drawable/normalbutton"
             android:text="@string/string_start"
             android:textSize="@dimen/textsize"/>
     </LinearLayout>
 
-    <com.kyleduo.switchbutton.SwitchButton
-        android:id="@+id/sb_host_player"
-        style="@style/SwitchButtonStyle"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_above="@+id/linearLayout"
-        android:layout_alignParentStart="true"
-        android:layout_gravity="center"
-        android:layout_marginBottom="17dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginStart="20dp"
-        android:gravity="center"
-        app:kswBackColor="@color/primary"
-        app:kswTextOff="PLAYERS"
-        app:kswTextOn="HOST"
-        app:kswThumbHeight="50dp"
-        app:kswThumbWidth="150dp" />
+        android:gravity="center_vertical">
+
+
+        <com.kyleduo.switchbutton.SwitchButton
+            android:id="@+id/sb_host_player"
+            style="@style/SwitchButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:gravity="fill_vertical|fill_horizontal"
+            app:kswBackColor="@color/primary"
+            app:kswTextOff="PLAYERS"
+            app:kswTextOn="HOST"
+            app:kswThumbHeight="50dp"
+            app:kswThumbWidth="150dp" />
+    </LinearLayout>
 
 </RelativeLayout>

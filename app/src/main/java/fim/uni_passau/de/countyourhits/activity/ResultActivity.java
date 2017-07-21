@@ -85,7 +85,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         raPlayerId = (TextView) findViewById(R.id.item_player_id);
         raCenterPoint = (TextView) findViewById(R.id.item_center_point);
         //initialize salut to connect to host network
-        initSalut();
+        //initSalut();
         if (resultList != null) {
             resultList.clear();
         }
@@ -117,14 +117,21 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     private void deleteFunction(List<Scores> scoreList) {
         int i = 4;
         scoreDataSource.open();
-        while(i < scoreList.size()){
-            scoreDataSource.deleteScoreRow(scoreList.get(i).getScoreId());
-            Helper.deleteImageFile(Helper.retrieveFile().getAbsolutePath());
-            //when we have real data comment the first one actiavate below line
-            //Helper.deleteImageFile(scoreList.get(i).getScoreImageBlob());
-            Log.i(LOGTAG, String.valueOf(scoreList.get(i).getScoreId()));
-            i ++;
-        }
+            while (i < scoreList.size()) {
+                scoreDataSource.deleteScoreRow(scoreList.get(i).getScoreId());
+                String filepath = Helper.retrieveFile().getAbsolutePath();
+
+                //for temp file path
+            /*    if(filepath != null) {
+                    Helper.deleteImageFile(Helper.retrieveFile().getAbsolutePath());
+                }*/
+
+                //when we have real data comment the first one actiavate below line
+                Helper.deleteImageFile(scoreList.get(i).getScoreImageBlob());
+                Log.i(LOGTAG, String.valueOf(scoreList.get(i).getScoreId()));
+                i++;
+            }
+
 
     }
 

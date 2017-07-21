@@ -32,8 +32,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="@dimen/textsize"
-                    app:typeface="robotoLight" />
+                    android:textSize="25sp"
+                    app:typeface="robotoBold" />
 
                 <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
                     android:id="@+id/player_id"
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="User ID"
-                    android:textSize="@dimen/textsize"
+                    android:textSize="15sp"
                     app:typeface="robotoLight" />
 
             </LinearLayout>
