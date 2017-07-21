@@ -74,6 +74,11 @@ public class PlayerlistActivity extends AppCompatActivity {
                     Intent sendToResult = new Intent(getApplicationContext(), ResultActivity.class);
                     sendToResult.putExtra("playerId", players.getPlayerId());
                     sendToResult.putExtra("requestId", randRequest);
+
+                    //new
+//                    sendToResult.putExtra("playerName", players.getPlayerName());
+//                    sendToResult.putExtra("playerImage", players.getPlayerImage());
+                    //new end
                     startActivity(sendToResult);
                 } else {
                     Toast.makeText(getApplicationContext(), "Please check wifi connection.", Toast.LENGTH_SHORT).show();

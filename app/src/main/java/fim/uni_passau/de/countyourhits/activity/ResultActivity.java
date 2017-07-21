@@ -16,7 +16,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,11 +36,14 @@ import com.yarolegovich.discretescrollview.Orientation;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
+import fim.uni_passau.de.countyourhits.adapter.PlayerAdapter;
 import fim.uni_passau.de.countyourhits.adapter.ResultAdapter;
 import fim.uni_passau.de.countyourhits.app.Helper;
+import fim.uni_passau.de.countyourhits.database.PlayersDataSource;
 import fim.uni_passau.de.countyourhits.database.ScoreDataSource;
 import fim.uni_passau.de.countyourhits.model.Message;
 import fim.uni_passau.de.countyourhits.model.Players;
@@ -55,7 +60,6 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     private ImageView rateItemButton;
     private DiscreteScrollView itemPicker;
     private InfiniteScrollAdapter infiniteAdapter;
-    Players players;
     private List<Scores> scores;
     //
     //salut p2p connection
@@ -73,16 +77,35 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
     private static final String LOGTAG = "DartDB_ResultActivity";
     ScoreDataSource scoreDataSource;
+    PlayersDataSource playersDataSource;
+    private List<Players> players;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+        playersDataSource = new PlayersDataSource(this);
+        playersDataSource.open();
 
         scoreDataSource = new ScoreDataSource(this);
 
         Bundle getPlayerDataByIntent = getIntent().getExtras();
         requestId = getPlayerDataByIntent.getLong("requestId");
         playerId = getPlayerDataByIntent.getLong("playerId");
+
+        //new <code>
+//        String playerName = getPlayerDataByIntent.getString("playerName");
+//        String playerImage = getPlayerDataByIntent.getString("playerImage");
+
+        players = playersDataSource.findByPlayerId("player_id == "+playerId);
+        final List<Players> playersData = (List<Players>) playersDataSource.findByPlayerId("player_id == "+playerId);
+
+        PlayerAdapter customAdaptor = new PlayerAdapter(this, playersData);
+        ListView customListView = (ListView) findViewById(R.id.playerlist);
+        customListView.setAdapter(customAdaptor);
+
+        // </code>
         Log.i(TAG, requestId + " " +playerId);
 
         raScorePoint = (TextView) findViewById(R.id.item_score_point);
@@ -150,12 +173,22 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        if (network != null) {
-//            network.stopServiceDiscovery(true);
-//        }
+        if (network != null && network.isDiscovering) {
+            network.stopServiceDiscovery(true);
+        }
         finish();
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        // code here to show dialog
+        super.onBackPressed();  // optional depending on your needs
+        if (network != null && !network.isDiscovering) {
+            network.unregisterClient(false);
+        }
+        finish();
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -237,7 +270,18 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         progressBar.setVisibility(View.VISIBLE);
         image.setVisibility(View.GONE);
 
-        if (!network.isRunningAsHost && !network.isDiscovering) {
+
+        if (!network.isRunningAsHost && !network.isDiscovering ) {
+            SalutDevice myDevice= network.thisDevice;
+            ArrayList<SalutDevice> registeredDevice= network.registeredClients;
+
+            if(myDevice != null && registeredDevice != null) {
+                if (!registeredDevice.contains(myDevice)) {
+                    Log.i(TAG, "register not");
+                } else {
+                    Log.i(TAG, "register");
+                }
+            }
             network.discoverWithTimeout(new SalutCallback() {
                 @Override
                 public void call() {
@@ -245,6 +289,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                         network.registerWithHost(device, new SalutCallback() {
                             @Override
                             public void call() {
+
                                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(ResultActivity.this);
                                 alertDialog.setTitle("Client Device Connected")
                                         .setMessage("Device: " + device.deviceName + " connected as host")
@@ -255,10 +300,15 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                                             }
                                         });
                                 AlertDialog alert = alertDialog.create();
-                                if (!isFinishing()) {
-                                    alert.show();
+                                if (alert.isShowing()) {
+                                    // A dialog is already open, wait for it to be dismissed, do nothing
+                                } else {
+                                    if (!isFinishing()) {
+                                        alert.show();
+                                    }
+                                    progressBar.setVisibility(View.GONE);
                                 }
-                                progressBar.setVisibility(View.GONE);
+
                                 Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
                                 image.setVisibility(View.VISIBLE);
                                 sendMsgToHost();
@@ -284,8 +334,12 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                                             }
                                         });
                                 AlertDialog alert = alertDialog.create();
-                                if (!isFinishing()) {
-                                    alert.show();
+                                if (alert.isShowing()) {
+
+                                } else {
+                                    if (!isFinishing()) {
+                                        alert.show();
+                                    }
                                 }
                             }
                         });
@@ -312,8 +366,12 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                             });
 
                     AlertDialog alert = alertDialog.create();
-                    if (!isFinishing()) {
-                        alert.show();
+                    if (alert.isShowing()) {
+                        //alert.dismiss();
+                    } else {
+                        if (!isFinishing()) {
+                            alert.show();
+                        }
                     }
 
                 }
@@ -333,10 +391,11 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
 
     @Override
     public void onDataReceived(Object data) {
-        Toast.makeText(getApplicationContext(),"received",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(),"received",Toast.LENGTH_SHORT).show();
         try
         {
-// TODO: 12/07/2017 Retreive Player Name to display Name instead of  
+// TODO: 12/07/2017 Retreive Player Name to display Name instead of
+
             ScoresMsg newScore = LoganSquare.parse(String.valueOf(data), ScoresMsg.class);
 
             if( newScore != null && newScore.imgBlob != ""){
