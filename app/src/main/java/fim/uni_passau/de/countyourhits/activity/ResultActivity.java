@@ -58,7 +58,6 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     private ImageView rateItemButton;
     private DiscreteScrollView itemPicker;
     private InfiniteScrollAdapter infiniteAdapter;
-    Players players;
     private List<Scores> scores;
     //
     //salut p2p connection
@@ -92,6 +91,12 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         Bundle getPlayerDataByIntent = getIntent().getExtras();
         requestId = getPlayerDataByIntent.getLong("requestId");
         playerId = getPlayerDataByIntent.getLong("playerId");
+
+        players = playersDataSource.findByPlayerId("player_id == "+playerId);
+        final List<Players> playersData = (List<Players>) playersDataSource.findByPlayerId("player_id == "+playerId);
+        PlayerAdapter customAdaptor = new PlayerAdapter(this, playersData);
+        ListView customListView = (ListView) findViewById(R.id.playerlist);
+        customListView.setAdapter(customAdaptor);
         Log.i(TAG, requestId + " " +playerId);
 
         raScorePoint = (TextView) findViewById(R.id.item_score_point);
