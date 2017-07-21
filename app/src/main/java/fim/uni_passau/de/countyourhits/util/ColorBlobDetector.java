@@ -240,9 +240,7 @@ public class ColorBlobDetector {
     public DetectedCircle processCircleByColor(Mat rgbaImage, Scalar hsvColor, int thrshldBlockSize, int thrshldC){
 
         DetectedCircle mDetectedOuterCircle= new DetectedCircle();
-        Mat rgbBlurImg=new Mat();
         Mat hsbImage= new Mat();
-        Mat blkImage=new Mat();
         Mat lowerRange=new Mat();
         Mat upperRange=new Mat();
 
@@ -291,7 +289,6 @@ public class ColorBlobDetector {
             //Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
             Imgproc.circle(red_hue_image, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
         }
-        //saveTargetImage(red_hue_image);
         return  mDetectedOuterCircle;
     }
 
@@ -348,16 +345,14 @@ public class ColorBlobDetector {
 
     }
 
-    public DetectedCircle processWhiteCircleHough(Mat rgbaImage) {
-
+    public DetectedCircle processWhiteCircleHough(Mat rgbaImage,int thrshldBlockSize, int thrshldC) {
         DetectedCircle mDetectedOuterCircle= new DetectedCircle();
         Mat blak_image= new Mat();
-        Imgproc.medianBlur(rgbaImage,rgbaImage,5);
+        Imgproc.medianBlur(rgbaImage,rgbaImage,7);
         Imgproc.cvtColor(rgbaImage, blak_image, Imgproc.COLOR_RGB2GRAY);
-
         Imgproc.GaussianBlur(blak_image, blak_image, new Size(11,11), 5, 5);
         Mat circles=new Mat();
-        Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows(), 100, 30,0,0);
+        Imgproc.HoughCircles(blak_image, circles, CV_HOUGH_GRADIENT, 1, blak_image.rows(), thrshldBlockSize, thrshldC,0,200);
 
         int detectedCircleCount=0;
         double mCirCoX=0.0f;
@@ -383,9 +378,9 @@ public class ColorBlobDetector {
             mDetectedOuterCircle.setCirRadius(mCirRadius / detectedCircleCount);
             mDetectedOuterCircle.setCircle(true);
             //Imgproc.minEnclosingCircle(circles.,mDetectedOuterCircle.getCirCoordinate(),mDetectedOuterCircle.getCirRadius());
-            Log.d("cv:center_out: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
-            Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(0, 0, 255), 3);
-            saveTargetImage(rgbaImage);
+            Log.d("cv:whitecirclecenter: ", mDetectedOuterCircle.getCirCoordinate() + " &  radius_out " + mDetectedOuterCircle.getCirRadius());
+            Imgproc.circle(rgbaImage, mDetectedOuterCircle.getCirCoordinate(), mDetectedOuterCircle.getCirRadius(), new Scalar(255, 33, 255), 2);
+            //saveTargetImage(rgbaImage);
         }
         return  mDetectedOuterCircle;
 
@@ -492,7 +487,7 @@ public class ColorBlobDetector {
         Imgproc.line(srcImg,new Point(0,imgHeight/2),new Point(imgWidth,imgHeight/2), colorVal,1);
         Imgproc.line(srcImg,new Point(imgWidth/2,0),new Point(imgWidth/2,imgHeight), colorVal,1);
     }
-    public void saveTargetImage(Mat mSavedImg){
+    public String saveTargetImage(Mat mSavedImg){
         File sdRoot = Environment.getExternalStorageDirectory();
         if (! sdRoot.exists()){
             if (! sdRoot.mkdirs()){
@@ -506,7 +501,7 @@ public class ColorBlobDetector {
         File pictureFile = new File(sdRoot, dir + fileName);
 
         Imgcodecs.imwrite("/sdcard/" + dir + fileName,mSavedImg);
-
+        return  fileName;
     }
     public List<MatOfPoint> getContours() {
         return mContours;
