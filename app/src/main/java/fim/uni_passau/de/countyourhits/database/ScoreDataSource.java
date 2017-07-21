@@ -13,6 +13,7 @@ import java.util.List;
 
 import fim.uni_passau.de.countyourhits.model.Scores;
 
+import static fim.uni_passau.de.countyourhits.database.DartOpenDBHelper.COLUMN_SCORE_ID;
 import static fim.uni_passau.de.countyourhits.database.DartOpenDBHelper.COLUMN_SCORE_PLAYER_ID;
 
 /**
@@ -74,6 +75,7 @@ public class ScoreDataSource {
         return  scores;
     }
 
+    /*load all the rows
     public List<Scores> findByPlayerId(String playerId, String orderBy, String limit) {
         Cursor cursor = database.query(DartOpenDBHelper.TABLE_SCORES, allColumns,
                 String.valueOf(playerId), null, null, null, orderBy, limit);
@@ -81,10 +83,21 @@ public class ScoreDataSource {
 
         List<Scores> scores = cursorToList(cursor);
         return  scores;
+    }*/
+
+    public List<Scores> findByPlayerId(String playerId, String orderBy) {
+        Cursor cursor = database.query(DartOpenDBHelper.TABLE_SCORES, allColumns,
+                String.valueOf(playerId), null, null, null, orderBy);
+        Log.i(LOGTAG, "Returned " +cursor.getCount() + "rows");
+
+        List<Scores> scores = cursorToList(cursor);
+        return  scores;
     }
 
     public boolean deleteScoreRow(long scoreId) {
-        int result = database.delete(DartOpenDBHelper.TABLE_SCORES, String.valueOf(scoreId), null);
+        String whereClause = COLUMN_SCORE_ID+" = ?";
+        String[] whereArgs = new String[] { String.valueOf(scoreId) };
+        int result = database.delete(DartOpenDBHelper.TABLE_SCORES, whereClause, whereArgs);
         return (result == 1);
     }
 

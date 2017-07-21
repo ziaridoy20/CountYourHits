@@ -377,6 +377,9 @@ public class ConnectionActivity extends AppCompatActivity  implements SalutDataC
                 streamImg.setImageBitmap(streamImgBitmap);
                 storeImage(streamImgBitmap);
             }
+
+
+
             else {
 
             }

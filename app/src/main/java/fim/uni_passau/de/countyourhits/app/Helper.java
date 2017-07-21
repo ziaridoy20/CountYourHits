@@ -1,10 +1,12 @@
 package fim.uni_passau.de.countyourhits.app;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.text.format.DateFormat;
 import android.util.Base64;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -50,7 +52,10 @@ public class Helper {
         DecimalFormat df = new DecimalFormat("#.###");
         return df.format(mDbl);
     }
-
+    public static File retrieveFile(){
+        File[] file=new File(Helper.getRootDirectoryPath() + "/DCIM/DirtHit/Result/").listFiles();
+        return file[0];
+    }
     public static String storeImage(Bitmap image) {
         //save image
         OutputStream output;
@@ -76,4 +81,13 @@ public class Helper {
         }
         return file.getAbsolutePath();
     }
+    public static boolean deleteImageFile(String filepath){
+
+        File file = new File(filepath);
+        if(file.exists()){
+            boolean deleted = file.delete();
+        }
+        return true;
+    }
+
 }
