@@ -105,11 +105,12 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         //initialize salut to connect to host network
         initSalut();
         if (resultList != null) {
+            deleteFunction(resultList);
             resultList.clear();
         }
                 resultList = getData(playerId, requestId);
         if (resultList.size() != 0) {
-            deleteFunction(resultList);
+            //deleteFunction(resultList);
             resultList = getData(playerId, requestId);
             itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
             itemPicker.setOrientation(Orientation.HORIZONTAL);
@@ -141,8 +142,10 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                 scoreDataSource.deleteScoreRow(scoreList.get(i).getScoreId());
 
                 //for temp file path
-            /*    if(filepath != null) {
+              /*  String filepath = Helper.retrieveFile().getAbsolutePath();
+                if(filepath != null) {
                     Helper.deleteImageFile(Helper.retrieveFile().getAbsolutePath());
+                    Log.i(LOGTAG,"deleted");
                 }*/
 
                 //when we have real data comment the first one actiavate below line
@@ -400,12 +403,11 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                 //nwScore.setScoreId(Long.valueOf(newScore.scoreId));
                 nwScore.setScoreDateTime(newScore.scoreDateTime);
                 nwScore.setScoreNote("test");
-
                 nwScore = scoreDataSource.create(nwScore);
-
+                resultList.add(nwScore);
                 deleteFunction(resultList);
                 resultList.clear();
-                resultList.add(nwScore);
+                resultList = getData(playerId, requestId);
                 //notifyAll();
                 displayResult();
                 infiniteAdapter.notifyDataSetChanged();
