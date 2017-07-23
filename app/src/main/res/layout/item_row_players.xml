@@ -12,38 +12,43 @@
         android:orientation="horizontal"
         android:weightSum="4">
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center">
             <ImageView
                 android:id="@+id/player_image"
-                android:layout_width="@dimen/user_img_width"
+                android:layout_width="50dp"
                 android:layout_height="@dimen/user_img_height"
-                android:layout_weight="1"
                 android:padding="10dp"
                 android:src="@drawable/ic_action_on_off" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical"
+            android:weightSum="2">
+
+            <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
+                android:id="@+id/player_name"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:orientation="vertical"
-                android:weightSum="2">
+                android:layout_weight="1"
+                android:textSize="25sp"
+                app:typeface="robotoBold" />
 
-                <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                    android:id="@+id/player_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="25sp"
-                    app:typeface="robotoBold" />
+            <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
+                android:id="@+id/player_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="User ID"
+                android:textSize="15sp"
+                app:typeface="robotoLight" />
 
-                <fim.uni_passau.de.countyourhits.fonts.RobotoTextView
-                    android:id="@+id/player_id"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="User ID"
-                    android:textSize="15sp"
-                    app:typeface="robotoLight" />
-
-            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

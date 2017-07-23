@@ -105,11 +105,12 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         //initialize salut to connect to host network
         initSalut();
         if (resultList != null) {
+            deleteFunction(resultList);
             resultList.clear();
         }
                 resultList = getData(playerId, requestId);
         if (resultList.size() != 0) {
-            deleteFunction(resultList);
+            //deleteFunction(resultList);
             resultList = getData(playerId, requestId);
             itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
             itemPicker.setOrientation(Orientation.HORIZONTAL);
@@ -129,6 +130,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         } else {
             Log.i(TAG, "player has no data");
         }
+        deleteFunction(resultList);
         displayResult();
     }
 
@@ -136,16 +138,18 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         int i = 4;
         scoreDataSource.open();
             while (i < scoreList.size()) {
+                Helper.deleteImageFile(scoreList.get(i).getScoreImageBlob());
                 scoreDataSource.deleteScoreRow(scoreList.get(i).getScoreId());
-                String filepath = Helper.retrieveFile().getAbsolutePath();
 
                 //for temp file path
-            /*    if(filepath != null) {
+              /*  String filepath = Helper.retrieveFile().getAbsolutePath();
+                if(filepath != null) {
                     Helper.deleteImageFile(Helper.retrieveFile().getAbsolutePath());
+                    Log.i(LOGTAG,"deleted");
                 }*/
 
                 //when we have real data comment the first one actiavate below line
-                Helper.deleteImageFile(scoreList.get(i).getScoreImageBlob());
+
                 Log.i(LOGTAG, String.valueOf(scoreList.get(i).getScoreId()));
                 i++;
             }
@@ -399,13 +403,12 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                 //nwScore.setScoreId(Long.valueOf(newScore.scoreId));
                 nwScore.setScoreDateTime(newScore.scoreDateTime);
                 nwScore.setScoreNote("test");
-
                 nwScore = scoreDataSource.create(nwScore);
-
-                resultList.clear();
                 resultList.add(nwScore);
-                //notifyAll();
                 deleteFunction(resultList);
+                resultList.clear();
+                resultList = getData(playerId, requestId);
+                //notifyAll();
                 displayResult();
                 infiniteAdapter.notifyDataSetChanged();
                 Log.e(TAG, "List updated" + resultList.size());
