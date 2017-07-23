@@ -419,7 +419,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         int thrsBlck = 0, thrsC = 0;
         ArrayList<DetectedCircle> mInnerCircle;
         Log.d(TAG, "OuterCircle " + mOuterCircle.getCirCoordinate() + " radius : " + mOuterCircle.getCirRadius());
-        Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 255, 100), 5);
+        Imgproc.circle(mRgba, mOuterCircle.getCirCoordinate(), mOuterCircle.getCirRadius(), new Scalar(0, 255, 100), 3);
 
         boolean IsPassed = IsPassedHighThreshold(mRgba, mOuterCircle);
         if (IsPassed) {
@@ -440,12 +440,13 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
                     if (mCircleDistance <= mOuterCircle.getCirRadius()) {
                         double dartDistnc = calculateDistance(mOuterCircle.getCirCoordinate(), newDirt.getCirCoordinate());
                         double dartScore= calculateScore(mOuterCircle.getCirRadius(),dartDistnc);
-                        Imgproc.circle(mRgba, newDirt.getCirCoordinate(), newDirt.getCirRadius(), new Scalar(80, 200, 255), 3);
+                        //Imgproc.circle(mRgba, newDirt.getCirCoordinate(), newDirt.getCirRadius(), new Scalar(80, 200, 255), 3);
                         Imgproc.line(mRgba, mOuterCircle.getCirCoordinate(), newDirt.getCirCoordinate(), new Scalar(255, 255, 255), 3);
                         //Imgproc.putText(mRgba, Helper.convertDouble2String(mCircleDistance), mInnerCircle.get(numberInrCircle).getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
                         Imgproc.putText(mRgba, Helper.convertDouble2String(calculateScore(mOuterCircle.getCirRadius(), dartDistnc)), newDirt.getCirCoordinate(), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(255, 255, 255));
-                        mInnerCircleList.add(newDirt);
+                        printExistDartPoint();
                         sendMsgToUser(mOuterCircle,dartScore,mRgba);
+                        mInnerCircleList.add(newDirt);
                         Log.d(TAG, "OuterCirclePassedInnerCircleScore " + mOuterCircle.getCirRadius() + ", " + dartDistnc + " , " + calculateScore(mOuterCircle.getCirRadius(), newDirt.getCirRadius()));
                     }
                 }
@@ -455,6 +456,15 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
         }
     }
 
+    private void printExistDartPoint(){
+        if(mInnerCircleList != null && mInnerCircleList.size() > 0){
+            int count=0;
+            while (count < mInnerCircleList.size()){
+                Imgproc.circle(mRgba, mInnerCircleList.get(count).getCirCoordinate(), 2, new Scalar(255, 255, 0), 5);
+                count++;
+            }
+        }
+    }
     private DetectedCircle findNewDartPosition(ArrayList<DetectedCircle> mInnerDetectCircleList) {
         DetectedCircle newDirt = new DetectedCircle();
         int numberInrCircle = 0;
@@ -473,11 +483,14 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     private boolean IsAlreadyExistSavedDartPosition(DetectedCircle mDartCircle) {
         boolean IsExist = false;
         int number = 0;
+        double distnceDiffThrshld= CALIB_CENTER_POINT_LOW_THRESHOLD / 2;
         if (mInnerCircleList != null && mInnerCircleList.size() > 0) {
             while (number < mInnerCircleList.size()) {
-                double pointDiff = calculateDistance(mInnerCircleList.get(0).getCirCoordinate(), mDartCircle.getCirCoordinate());
-                if (pointDiff < 1) {
+                double pointDiff = calculateDistance(mInnerCircleList.get(number).getCirCoordinate(), mDartCircle.getCirCoordinate());
+                Log.i(TAG,"IsAlreadyExistSavedDartPosition difference: "+ pointDiff + "; loop: "+ number +" dart point " + mDartCircle.getCirCoordinate().toString() + "saved point : "+ mInnerCircleList.get(number).getCirCoordinate().toString());
+                if (pointDiff < distnceDiffThrshld  ) {
                     IsExist = true;
+                    Log.i(TAG,"IsAlreadyExistSavedDartPosition : "+ IsExist + " point " + mDartCircle.getCirCoordinate().toString());
                     break;
                 }
                 number++;
@@ -518,7 +531,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
     }
 
     private double calculateScore(double trgtRadius, double center2dartRadius) {
-        double score = (center2dartRadius / trgtRadius) * 100;
+        double score = (center2dartRadius / trgtRadius) * 10;
         return score;
     }
 
@@ -580,8 +593,10 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
             mOuterCenterWhiteCircle = mDetector.processWhiteCircleHough(circleImg,thrsBlck,thrsC);
             if (mOuterCircle != null && mOuterCenterWhiteCircle != null) {
                 double pointsDiff = calculateDistance(mOuterCircle.getCirCoordinate(), mOuterCenterWhiteCircle.getCirCoordinate());
-                if (pointsDiff < CALIB_CENTER_POINT_LOW_THRESHOLD) {
+                int radiusDiff= Math.abs(mOuterCircle.getCirRadius() - mOuterCenterWhiteCircle.getCirRadius());
+                if (pointsDiff < CALIB_CENTER_POINT_LOW_THRESHOLD && radiusDiff > CALIB_CENTER_POINT_LOW_THRESHOLD) {
                     mIsStableCenterPoint = true;
+                    mInnerCircleList= new ArrayList<>();
                 } else {
                     mIsStableCenterPoint = false;
                     mOuterCircle.setCircle(false);
