@@ -2,9 +2,7 @@ package fim.uni_passau.de.countyourhits.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -14,7 +12,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -34,7 +31,6 @@ import com.yarolegovich.discretescrollview.Orientation;
 import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import fim.uni_passau.de.countyourhits.R;
@@ -51,6 +47,7 @@ import fim.uni_passau.de.countyourhits.model.ScoresMsg;
 public class ResultActivity extends AppCompatActivity implements DiscreteScrollView.OnItemChangedListener,
         View.OnClickListener, SalutDataCallback {
     private List<Scores> resultList;
+    private double prevScore=0;
 
     private TextView raScorePoint;
     private TextView raPlayerId;
@@ -108,7 +105,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
             deleteFunction(resultList);
             resultList.clear();
         }
-                resultList = getData(playerId, requestId);
+        resultList = getData(playerId, requestId);
         if (resultList.size() != 0) {
             //deleteFunction(resultList);
             resultList = getData(playerId, requestId);
@@ -130,12 +127,12 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
         } else {
             Log.i(TAG, "player has no data");
         }
-        deleteFunction(resultList);
+        //deleteFunction(resultList);
         displayResult();
     }
 
     private void deleteFunction(List<Scores> scoreList) {
-        int i = 4;
+        int i = 5;
         scoreDataSource.open();
             while (i < scoreList.size()) {
                 Helper.deleteImageFile(scoreList.get(i).getScoreImageBlob());
@@ -166,6 +163,7 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
     //findViewById(R.id.btn_transition_time).setOnClickListener(this);
 
     public void displayResult() {
+        resultList.clear();
         resultList = getData(playerId, requestId);
         if (resultList.size() != 0) {
             itemPicker = (DiscreteScrollView) findViewById(R.id.item_picker);
@@ -403,15 +401,19 @@ public class ResultActivity extends AppCompatActivity implements DiscreteScrollV
                 //nwScore.setScoreId(Long.valueOf(newScore.scoreId));
                 nwScore.setScoreDateTime(newScore.scoreDateTime);
                 nwScore.setScoreNote("test");
-                nwScore = scoreDataSource.create(nwScore);
-                resultList.add(nwScore);
-                deleteFunction(resultList);
-                resultList.clear();
-                resultList = getData(playerId, requestId);
-                //notifyAll();
-                displayResult();
-                infiniteAdapter.notifyDataSetChanged();
-                Log.e(TAG, "List updated" + resultList.size());
+                if(prevScore!= Double.valueOf(nwScore.getScorePoint())){
+                    prevScore=Double.valueOf(nwScore.getScorePoint());
+                    nwScore = scoreDataSource.create(nwScore);
+                    //resultList.add(nwScore);
+                    deleteFunction(resultList);
+
+                    //resultList = getData(playerId, requestId);
+                    //notifyAll();
+                    displayResult();
+                    infiniteAdapter.notifyDataSetChanged();
+                    Log.e(TAG, "List updated" + resultList.size());
+                }
+
             }
             else {
 

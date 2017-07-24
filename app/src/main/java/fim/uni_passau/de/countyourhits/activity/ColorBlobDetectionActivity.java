@@ -596,7 +596,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
                 int radiusDiff= Math.abs(mOuterCircle.getCirRadius() - mOuterCenterWhiteCircle.getCirRadius());
                 if (pointsDiff < CALIB_CENTER_POINT_LOW_THRESHOLD && radiusDiff > CALIB_CENTER_POINT_LOW_THRESHOLD) {
                     mIsStableCenterPoint = true;
-                    mInnerCircleList= new ArrayList<>();
+                    //mInnerCircleList= new ArrayList<>();
                 } else {
                     mIsStableCenterPoint = false;
                     mOuterCircle.setCircle(false);
@@ -697,6 +697,7 @@ public class ColorBlobDetectionActivity extends Activity implements OnTouchListe
             if( newMessage != null ){
                 playerId=newMessage.playerId;
                 requestId=newMessage.requestId;
+                mInnerCircleList= new ArrayList<>();
             }
             else {
 
